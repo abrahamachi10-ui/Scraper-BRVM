@@ -1,0 +1,11 @@
+# Scrapers
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+pandas>=2.0
+numpy>=1.24
+
+# ETF Builder (Streamlit app)
+streamlit>=1.30
+plotly>=5.18
+scipy>=1.11

@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+.env.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit / Jupyter
+.streamlit/secrets.toml
+.ipynb_checkpoints/
+
+# Tests / outputs temp
+streamlit*.log
+streamlit*.html
+page.html
+etf_weights*.csv
+grid_search.csv
