@@ -1,9 +1,9 @@
 {
   "ticker": "SAFC.ci",
   "Nom": "SAFCA CI",
-  "Chiffre d'affaires": "3 414",
-  "Résultat net": "-1 640",
-  "BNPA": "-201,98",
+  "Chiffre d'affaires": "3 567",
+  "Résultat net": "-603",
+  "BNPA": "-",
   "PER": "-",
   "Dividende": "-",
   "ISIN": "CI0000000022",
@@ -16,12 +16,12 @@
   "Dirigeants": "Directrice Générale: Marie Odile Segneble épouse GNACADJA",
   "Nombre de titres": "8 119 750",
   "Flottant": "29,43%",
-  "Valorisation de la société": "46 689 MFCFA",
+  "Valorisation de la société": "28 419 MFCFA",
   "Nombre_Titres": "8 119 750",
-  "Valorisation": "46 689 MFCFA",
+  "Valorisation": "28 419 MFCFA",
   "Secteur": "BRVM - SERVICES FINANCIERS",
-  "Conseil_Image_URL": "https://www.sikafinance.com/i/bf_5b.png",
-  "Conseil_Image_Nom": "bf_5b.png",
-  "Conseil_Texte": "La valeur demeure inscrite dans une spirale baissière à court terme. Aucune opportunité ne se fait jour dans ces conditions, elle ne semble pas avoir épuisé son potentiel baissier.",
-  "Conseil_Avertissement": "Cette recommandation est revue tous les jours à la\r\n                            clôture de la bourse. Elle peut changer rapidement car elle est basée sur des facteurs techniques."
+  "Conseil_Image_URL": "https://www.sikafinance.com/i/bf_1b.png",
+  "Conseil_Image_Nom": "bf_1b.png",
+  "Conseil_Texte": "L'action se place progressivement en situation de rebond. Nous surveillerons tout démarrage pour se placer à l'achat et rentrer dans le train de la hausse.",
+  "Conseil_Avertissement": "Cette recommandation est revue tous les jours à la\n                            clôture de la bourse. Elle peut changer rapidement car elle est basée sur des facteurs techniques."
 }
