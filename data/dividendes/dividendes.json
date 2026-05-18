@@ -1,5 +1,5 @@
 {
-  "date_scraping": "2026-05-15 17:37:46",
+  "date_scraping": "2026-05-18 17:47:24",
   "source": "https://www.sikafinance.com/marches/dividendes",
   "a_venir": [
     {
@@ -8,7 +8,7 @@
       "Ticker": "SNTS.sn",
       "Nom": "SONATEL",
       "Montant_FCFA": 1740.0,
-      "Rendement_Pct": 6.02
+      "Rendement_Pct": 6.04
     },
     {
       "Date_Detachement": "2026-05-22",
@@ -32,7 +32,15 @@
       "Ticker": "BOAS.sn",
       "Nom": "BANK OF AFRICA SENEGAL",
       "Montant_FCFA": 450.0,
-      "Rendement_Pct": 5.92
+      "Rendement_Pct": 5.84
+    },
+    {
+      "Date_Detachement": "2026-05-29",
+      "Statut": "A venir",
+      "Ticker": "CABC.ci",
+      "Nom": "SICABLE CI",
+      "Montant_FCFA": 152.02,
+      "Rendement_Pct": 4.38
     },
     {
       "Date_Detachement": "2026-06-02",
@@ -48,7 +56,7 @@
       "Ticker": "ONTBF.bf",
       "Nom": "ONATEL BF",
       "Montant_FCFA": 145.32,
-      "Rendement_Pct": 5.2
+      "Rendement_Pct": 5.19
     },
     {
       "Date_Detachement": "A préciser",
@@ -56,7 +64,7 @@
       "Ticker": "SMBC.ci",
       "Nom": "SMB CI",
       "Montant_FCFA": 704.0,
-      "Rendement_Pct": 5.46
+      "Rendement_Pct": 5.5
     },
     {
       "Date_Detachement": "A préciser",
@@ -64,7 +72,7 @@
       "Ticker": "LNBB.bj",
       "Nom": "LOTERIE NATIONALE DU BENIN",
       "Montant_FCFA": 164.0,
-      "Rendement_Pct": 4.21
+      "Rendement_Pct": 4.22
     },
     {
       "Date_Detachement": "A préciser",
@@ -72,7 +80,7 @@
       "Ticker": "PRSC.ci",
       "Nom": "TRACTAFRIC MOTORS CI",
       "Montant_FCFA": 183.92,
-      "Rendement_Pct": 4.98
+      "Rendement_Pct": 5.08
     },
     {
       "Date_Detachement": "A préciser",
@@ -80,7 +88,7 @@
       "Ticker": "NTLC.ci",
       "Nom": "NESTLE CI",
       "Montant_FCFA": 369.6,
-      "Rendement_Pct": 3.15
+      "Rendement_Pct": 3.09
     },
     {
       "Date_Detachement": "A préciser",
@@ -88,7 +96,7 @@
       "Ticker": "TTLS.sn",
       "Nom": "TOTAL SENEGAL",
       "Montant_FCFA": 169.81,
-      "Rendement_Pct": 5.65
+      "Rendement_Pct": 5.68
     },
     {
       "Date_Detachement": "A préciser",
@@ -96,7 +104,7 @@
       "Ticker": "ABJC.ci",
       "Nom": "SERVAIR ABIDJAN CI",
       "Montant_FCFA": 120.97,
-      "Rendement_Pct": 4.24
+      "Rendement_Pct": 4.25
     },
     {
       "Date_Detachement": "A préciser",
@@ -104,7 +112,7 @@
       "Ticker": "SDCC.ci",
       "Nom": "SODECI",
       "Montant_FCFA": 462.0,
-      "Rendement_Pct": 4.67
+      "Rendement_Pct": 4.34
     },
     {
       "Date_Detachement": "A préciser",
@@ -112,7 +120,7 @@
       "Ticker": "NEIC.ci",
       "Nom": "NEI CEDA CI",
       "Montant_FCFA": 140.39,
-      "Rendement_Pct": 7.31
+      "Rendement_Pct": 7.24
     },
     {
       "Date_Detachement": "A préciser",
@@ -136,7 +144,7 @@
       "Ticker": "ETIT.tg",
       "Nom": "ETI TG",
       "Montant_FCFA": 0.93,
-      "Rendement_Pct": 3.21
+      "Rendement_Pct": 3.1
     },
     {
       "Date_Detachement": "A préciser",
@@ -144,7 +152,7 @@
       "Ticker": "CBIBF.bf",
       "Nom": "CORIS BANK INTERNATIONAL BF",
       "Montant_FCFA": 900.0,
-      "Rendement_Pct": 4.52
+      "Rendement_Pct": 4.39
     },
     {
       "Date_Detachement": "A préciser",
@@ -152,7 +160,7 @@
       "Ticker": "TTLC.ci",
       "Nom": "TOTAL CI",
       "Montant_FCFA": 139.77,
-      "Rendement_Pct": 4.8
+      "Rendement_Pct": 4.81
     },
     {
       "Date_Detachement": "A préciser",
@@ -168,7 +176,7 @@
       "Ticker": "SPHC.ci",
       "Nom": "SAPH CI",
       "Montant_FCFA": 430.32,
-      "Rendement_Pct": 6.16
+      "Rendement_Pct": 6.25
     },
     {
       "Date_Detachement": "A préciser",
@@ -176,15 +184,7 @@
       "Ticker": "ORAC.ci",
       "Nom": "ORANGE CI",
       "Montant_FCFA": 704.0,
-      "Rendement_Pct": 4.65
-    },
-    {
-      "Date_Detachement": "A préciser",
-      "Statut": "A préciser",
-      "Ticker": "CABC.ci",
-      "Nom": "SICABLE CI",
-      "Montant_FCFA": 152.02,
-      "Rendement_Pct": 4.35
+      "Rendement_Pct": 4.51
     }
   ],
   "historique": [
