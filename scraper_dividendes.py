@@ -25,6 +25,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+from brvm_emetteur_mapping import lookup_ticker
+
 BASE_URL = "https://www.sikafinance.com"
 DIVIDENDES_URL = BASE_URL + "/marches/dividendes"
 
@@ -148,8 +150,10 @@ def parse_a_venir(soup: BeautifulSoup, today: datetime) -> list[dict]:
                 "Date_Detachement": date_iso,
                 "Statut": statut,
                 "Ticker": ticker,
+                "Nom_Canonique": lookup_ticker(ticker),
                 "Nom": nom_cell.get_text(strip=True),
-                "Montant_FCFA": clean_number(tds[2].get_text(strip=True)),
+                "Source": "sikafinance.com",
+                "Montant_Net_FCFA": clean_number(tds[2].get_text(strip=True)),
                 "Rendement_Pct": clean_pct(tds[3].get_text(strip=True)),
             }
         )
@@ -190,7 +194,12 @@ def parse_historique(soup: BeautifulSoup) -> list[dict]:
         nom_cell = tds[0]
         ticker = extract_ticker(nom_cell.find("a"))
         nom = nom_cell.get_text(strip=True).replace("\xa0", " ")
-        row = {"Ticker": ticker, "Nom": nom}
+        row = {
+            "Ticker": ticker,
+            "Nom_Canonique": lookup_ticker(ticker),
+            "Nom": nom,
+            "Source": "sikafinance.com",
+        }
         for idx_div, idx_rend, year in year_cols:
             div_txt = tds[idx_div].get_text(strip=True) if idx_div < len(tds) else ""
             rend_txt = tds[idx_rend].get_text(strip=True) if idx_rend < len(tds) else ""
