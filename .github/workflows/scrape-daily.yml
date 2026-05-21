@@ -15,14 +15,13 @@ on:
           - full
           - cours_only
           - dividendes_only
-          - societes_only
           - news_only
 
 permissions:
   contents: write
 
 concurrency:
-  group: scrape-brvm
+  group: scrape-brvm-daily
   cancel-in-progress: false
 
 jobs:
@@ -52,11 +51,6 @@ jobs:
         run: python scraper_brvm.py
         continue-on-error: true
 
-      - name: Scraping fiches sociétés
-        if: ${{ github.event_name == 'schedule' || inputs.mode == 'full' || inputs.mode == 'societes_only' }}
-        run: python scraper_info_societes.py
-        continue-on-error: true
-
       - name: Scraping dividendes
         if: ${{ github.event_name == 'schedule' || inputs.mode == 'full' || inputs.mode == 'dividendes_only' }}
         run: python scraper_dividendes_unified.py
@@ -71,7 +65,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: scraper-logs-${{ github.run_id }}
+          name: scraper-logs-daily-${{ github.run_id }}
           path: "*.log"
           retention-days: 14
           if-no-files-found: ignore
@@ -85,7 +79,6 @@ jobs:
             echo "Aucune mise à jour de données — pas de commit."
           else
             git commit -m "data: scraping quotidien $(date -u +'%Y-%m-%d %H:%M UTC')"
-            # retry simple en cas de course-condition (run manuel + cron)
             for i in 1 2 3; do
               git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && break
               echo "Tentative $i échouée, on retente..."

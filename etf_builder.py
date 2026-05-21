@@ -27,6 +27,7 @@ DATA_DIR = Path(__file__).parent / "data"
 ACTIONS_DIR = DATA_DIR / "actions"
 INDICES_DIR = DATA_DIR / "indices"
 SOCIETES_DIR = DATA_DIR / "societes"
+FONDAMENTAUX_DIR = DATA_DIR / "fondamentaux"
 DIVIDENDES_FILE = DATA_DIR / "dividendes" / "dividendes_historique.csv"
 
 NUM_COLS = ["Ouverture", "Plus_Haut", "Plus_Bas", "Cloture", "Variation_Pct"]
@@ -83,6 +84,15 @@ def _to_float(s: str | float | int | None) -> float | None:
         return None
 
 
+def _latest_metric(fond: dict, name: str) -> str | None:
+    """Renvoie la valeur la plus récente du métrique `name` dans un JSON fondamentaux."""
+    m = (fond or {}).get("metrics", {}).get(name, {})
+    if not m:
+        return None
+    latest_year = max(m.keys())
+    return m.get(latest_year)
+
+
 @st.cache_data(show_spinner=False)
 def load_societes() -> pd.DataFrame:
     rows = []
@@ -91,6 +101,18 @@ def load_societes() -> pd.DataFrame:
             obj = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             continue
+        # Fusion avec les fondamentaux (matrice 5 ans) — on retient l'année la plus récente
+        ticker = obj.get("ticker", "")
+        fond_path = FONDAMENTAUX_DIR / f"{safe_filename(ticker)}_fondamentaux.json"
+        if fond_path.exists():
+            try:
+                fond = json.loads(fond_path.read_text(encoding="utf-8"))
+            except Exception:
+                fond = {}
+            for k in ("Chiffre d'affaires", "Résultat net", "BNPA", "PER", "Dividende"):
+                v = _latest_metric(fond, k)
+                if v is not None:
+                    obj[k] = v
         rows.append(obj)
     df = pd.DataFrame(rows)
     if df.empty:

@@ -6,6 +6,8 @@ Récupère les métadonnées (hors historique de cours) :
   - Indices : nom complet + ISIN
 
 L'historique des cours est géré séparément par scraper_brvm.py.
+Les fondamentaux historiques (CA, RN, BNPA, PER, Dividende sur 5 ans) sont
+gérés par scraper_fondamentaux.py.
 La liste des tickers est centralisée dans brvm_tickers.py.
 
 Sorties :
@@ -45,6 +47,18 @@ REQUEST_DELAY = 0.5
 OUTPUT_DIR = Path(__file__).parent / "data"
 SOCIETE_DIR = OUTPUT_DIR / "societes"
 INDICES_DIR = OUTPUT_DIR / "indices"
+
+# Champs gérés par scraper_fondamentaux.py — exclus de la fiche société pour éviter
+# le doublon (la fiche société ne gardait que la 1ère année, perdant l'historique).
+FONDAMENTAUX_KEYS = {
+    "Chiffre d'affaires",
+    "Croissance CA",
+    "Résultat net",
+    "Croissance RN",
+    "BNPA",
+    "PER",
+    "Dividende",
+}
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -126,7 +140,7 @@ def scrape_societe(session: requests.Session, ticker: str) -> dict:
                 val = tds[1].get_text(strip=True)
                 if key and val and len(key) < 100:
                     clean_key = re.sub(r"[:\s]+$", "", key).strip()
-                    if clean_key:
+                    if clean_key and clean_key not in FONDAMENTAUX_KEYS:
                         info[clean_key] = val
 
     # Paires <dt>/<dd>
