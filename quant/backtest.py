@@ -99,11 +99,12 @@ def run_walk_forward(
             bench_curve.append(bench_curve[-1])
             continue
 
-        cov = estimate_covariance(results, as_of=t - pd.Timedelta(days=1))
         try:
+            cov = estimate_covariance(results, as_of=t - pd.Timedelta(days=1))
             opt = optimize_portfolio(cov, signals)
-        except Exception as exc:  # numerical edge cases at early dates
-            log.warning("optimization failed at %s: %s", t.date(), exc)
+        except (ValueError, np.linalg.LinAlgError) as exc:
+            # Early backtest dates may lack enough overlapping history.
+            log.warning("rebalance skipped at %s: %s", t.date(), exc)
             curve_dates.append(t_next)
             algo_curve.append(algo_curve[-1])
             bh_curve.append(bh_curve[-1])
