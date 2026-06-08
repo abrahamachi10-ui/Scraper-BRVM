@@ -41,7 +41,8 @@
     }
   }
   body { font-family: 'Georgia', 'Times New Roman', serif; background: var(--bg-ter); color: var(--text); min-height: 100vh; }
-  .app { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .app { max-width: 1600px; margin: 0 auto; padding: 1.5rem 2rem; width: 100%; }
+  @media (max-width: 768px) { .app { padding: 1rem; } }
 
   /* Header */
   header { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 2rem; border-bottom: 0.5px solid var(--border-med); padding-bottom: 1rem; }
@@ -74,7 +75,7 @@
   .pbtn:hover:not(.active) { background: var(--bg-sec); }
 
   /* Metrics */
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
   .metric { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
   .metric .lbl { font-size: 11px; color: var(--text-sec); font-family: 'Courier New', monospace; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
   .metric .val { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
@@ -82,10 +83,11 @@
   .up { color: var(--up); } .down { color: var(--down); }
 
   /* Charts */
-  .chart-wrap { position: relative; width: 100%; height: 260px; margin-bottom: 1.75rem; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; }
+  .chart-wrap { position: relative; width: 100%; height: 420px; margin-bottom: 1.75rem; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; }
+  @media (max-width: 768px) { .chart-wrap { height: 280px; } }
 
   /* Index cards */
-  .indices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .indices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
   .idx-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; cursor: pointer; transition: border-color .15s; }
   .idx-card:hover, .idx-card.selected { border-color: var(--blue); }
   .idx-card .iname { font-size: 11px; color: var(--text-sec); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
@@ -94,7 +96,17 @@
 
   /* Info cards */
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .info-grid-3 { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; }
+  @media (max-width: 900px) { .info-grid-3 { grid-template-columns: 1fr; } }
   @media (max-width: 540px) { .info-grid { grid-template-columns: 1fr; } }
+  /* Algo input */
+  .algo-input-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--border); }
+  .algo-input-row label { font-size: 12px; color: var(--text-sec); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .04em; }
+  .algo-input-row input { padding: 8px 12px; font-size: 14px; font-family: inherit; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--bg); color: var(--text); width: 180px; font-weight: 700; }
+  .algo-input-row input:focus { outline: none; border-color: var(--blue); }
+  .algo-input-row .hint { font-size: 11px; color: var(--text-sec); font-style: italic; }
+  .algo-input-row .preset { padding: 6px 10px; font-size: 11px; font-family: 'Courier New', monospace; border: 0.5px solid var(--border-med); border-radius: 6px; background: var(--bg); cursor: pointer; color: var(--text-sec); }
+  .algo-input-row .preset:hover { background: var(--bg-sec); color: var(--text); }
   .info-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; }
   .info-card h3 { font-size: 10px; font-weight: 700; color: var(--text-sec); font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
   .kv { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
@@ -206,19 +218,96 @@
     <div class="info-card" style="margin-bottom:1.5rem">
       <h3>Allocation Black-Litterman + Prophet</h3>
       <p style="font-size:13px;color:var(--text-sec);line-height:1.6">
-        Ce portefeuille est optimisé mensuellement en combinant l'équilibre du marché et les vues prévisionnelles de l'IA Prophet. 
-        Contraintes : Max 25% par actif, pas de vente à découvert, liquidité J+2 respectée.
+        Allocation théorique calculée par Black-Litterman avec les vues Prophet (horizon 30j).
+        Contraintes : max 25% par actif, pas de short-selling, filtre liquidité J+2.
+        <strong>Note :</strong> les poids théoriques sont convertis en <em>nombre d'actions entier</em> en tenant compte du dernier prix de marché et des frais de courtage. Le résidu non investissable va en cash.
+      </p>
+      <div class="algo-input-row">
+        <label for="algo-capital">Capital</label>
+        <input type="number" id="algo-capital" value="1000000" min="0" step="10000" oninput="loadAlgo()"/>
+        <span style="font-weight:700;color:var(--text)">FCFA</span>
+        <button class="preset" onclick="setCapital(500000)">500K</button>
+        <button class="preset" onclick="setCapital(1000000)">1M</button>
+        <button class="preset" onclick="setCapital(5000000)">5M</button>
+        <button class="preset" onclick="setCapital(10000000)">10M</button>
+      </div>
+      <div class="algo-input-row">
+        <label for="algo-fees">Frais courtage</label>
+        <input type="number" id="algo-fees" value="1.0" min="0" max="10" step="0.1" style="width:90px" oninput="loadAlgo()"/>
+        <span style="font-weight:700;color:var(--text)">%</span>
+        <label for="algo-startdate" style="margin-left:18px">Date d'achat (suivi)</label>
+        <input type="date" id="algo-startdate" style="width:170px" onchange="loadAlgo()"/>
+        <span class="hint">Définit la date à partir de laquelle on calcule l'évolution du portefeuille.</span>
+      </div>
+    </div>
+
+    <!-- Métadonnées -->
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Métadonnées de l'allocation</h3>
+      <div id="algo-meta" class="metrics" style="margin-bottom:0"></div>
+    </div>
+
+    <div class="info-grid-3">
+        <div class="info-card">
+            <h3>Allocation réalisable (nombre d'actions × prix)</h3>
+            <div id="algo-weights-table" style="overflow-x:auto"></div>
+            <div id="algo-summary" style="margin-top:14px"></div>
+        </div>
+        <div class="info-card">
+            <h3>Répartition (montant réellement investi)</h3>
+            <div class="chart-wrap" style="height:340px;margin-bottom:0;border:none;padding:0"><canvas id="chart-algo-pie"></canvas></div>
+        </div>
+    </div>
+
+    <!-- Évolution P&L -->
+    <div class="info-card" style="margin-top:1.5rem">
+      <h3>Évolution du portefeuille vs Buy &amp; Hold vs BRVM Composite</h3>
+      <div class="legend">
+        <span><i style="background:#185FA5"></i>Portefeuille Algo (rebalancé)</span>
+        <span><i style="background:#6b6b67"></i>Buy &amp; Hold (allocation figée à J0)</span>
+        <span><i style="background:#1D9E75"></i>BRVM Composite</span>
+        <span><i style="background:transparent;border-top:2px dashed #888;height:0"></i>Capital initial</span>
+      </div>
+      <div id="algo-pnl-metrics" class="metrics" style="margin-bottom:1rem"></div>
+      <div class="chart-wrap" style="height:420px"><canvas id="chart-algo-pnl"></canvas></div>
+      <p class="conseil-warn" style="margin-top:6px">
+        Les 3 courbes sont calibrées au même capital initial à la date d'achat. Le portefeuille Algo intègre les dividendes encaissés. Le Buy &amp; Hold reprend l'allocation actuelle figée à J0 (pas de rebalancement). BRVMC est mis à l'échelle pour comparaison.
       </p>
     </div>
-    <div class="info-grid">
-        <div class="info-card">
-            <h3>Allocation Optimale</h3>
-            <div id="algo-weights-table"></div>
-        </div>
-        <div class="info-card">
-            <h3>Répartition</h3>
-            <div class="chart-wrap" style="height:200px"><canvas id="chart-algo-pie"></canvas></div>
-        </div>
+
+    <!-- Plan d'action vs portefeuille actuel -->
+    <div class="info-card" style="margin-top:1.5rem">
+      <h3>Plan d'action : signaux Prophet × allocation cible</h3>
+      <p style="font-size:12.5px;color:var(--text-sec);line-height:1.6;margin-bottom:10px">
+        Comparaison entre votre portefeuille réel actuel et l'allocation cible. La colonne <em>Action</em> indique mécaniquement quoi faire ; le signal Prophet est juxtaposé pour détecter les conflits (ex : BL maintient une position mais Prophet signale VENTE FORTE).
+      </p>
+      <div class="algo-input-row" style="border-top:none;padding-top:0">
+        <span class="hint">Saisissez le nombre d'actions actuellement détenues. Par défaut = allocation calculée ci-dessus.</span>
+        <button class="preset" onclick="resetHoldingsToTarget()">Réinitialiser au cible</button>
+        <button class="preset" onclick="clearHoldings()">Vider (portefeuille neuf)</button>
+      </div>
+      <div id="algo-action-plan" style="overflow-x:auto;margin-top:10px"></div>
+    </div>
+
+    <!-- Simulateur de rebalancement (J vs J+2) -->
+    <div class="info-card" style="margin-top:1.5rem">
+      <h3>Simulateur de rebalancement — Exécution idéale vs cycle BRVM (J+2)</h3>
+      <p style="font-size:12.5px;color:var(--text-sec);line-height:1.6;margin-bottom:10px">
+        À la BRVM, le cash issu d'une vente n'est disponible qu'au règlement-livraison (J+2 pour les actions liquides). Cette simulation compare deux scénarios :
+        <strong>Idéal</strong> = tout exécuté à J au prix de J. <strong>Cycle réel</strong> = ventes à J, achats à J+2 au prix de J+2 (slippage observé).
+      </p>
+      <div class="algo-input-row" style="border-top:none;padding-top:0">
+        <label for="rebal-date">Date du rebalancement (J)</label>
+        <input type="date" id="rebal-date" style="width:170px" onchange="loadAlgo()"/>
+        <span class="hint">Par défaut = date d'achat ci-dessus. Doit être ≤ aujourd'hui pour observer J+2 réel.</span>
+      </div>
+      <div id="algo-rebal-sim" style="margin-top:10px"></div>
+    </div>
+
+    <!-- Dividendes à venir -->
+    <div class="info-card" style="margin-top:1.5rem">
+      <h3>Dividendes attendus sur ce portefeuille</h3>
+      <div id="algo-dividendes"></div>
     </div>
   </div>
 
@@ -262,6 +351,11 @@ async function loadSignalsData() {
   ALGO_DATA = {
     backtest: algoJson.backtest || null,
     allocation: algoJson.allocation || {},
+    generated_at: algoJson.generated_at || null,
+    horizon_days: algoJson.horizon_days || 30,
+    expected_return_30d: algoJson.expected_return_30d ?? null,
+    expected_volatility_30d: algoJson.expected_volatility_30d ?? null,
+    sharpe_ratio_30d: algoJson.sharpe_ratio_30d ?? null,
   };
 }
 
@@ -301,54 +395,654 @@ function populateSelects() {
 }
 
 
-let chartAlgoPie = null, chartBacktest = null;
+let chartAlgoPie = null, chartBacktest = null, chartAlgoPnl = null;
+let ALGO_PRICES = {};      // ticker -> [{date, close}, ...]
+let BRVMC_PRICES = [];     // [{date, close}, ...]
+let DIVIDENDES_FUTURS = []; // [{ticker_norm, ...}]
+let DIVIDENDES_PASSES = [];
+let USER_HOLDINGS = null;  // {ticker: nbActions} — null = utiliser la cible
 
-function loadAlgo() {
+function setCapital(v) {
+    const inp = document.getElementById('algo-capital');
+    if (inp) { inp.value = v; loadAlgo(); }
+}
+
+function fmtFCFA(v) {
+    if (!isFinite(v)) return '–';
+    return Math.round(v).toLocaleString('fr-FR');
+}
+
+function fmtDate(d) {
+    if (!d) return '–';
+    const dt = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dt)) return '–';
+    return dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function parseFrNum(s) {
+    if (s === null || s === undefined) return NaN;
+    return parseFloat(String(s).replace(/\s/g, '').replace(',', '.'));
+}
+
+// Normalise tickers entre algo (NSBC_ci) et dividendes (NSBC.ci)
+function tickerToDivFormat(t) { return t.replace('_', '.').toUpperCase(); }
+function tickerFromDiv(t) { return t.replace('.', '_').toLowerCase(); }
+
+async function ensureAlgoPrices(tickers) {
+    const missing = tickers.filter(t => !ALGO_PRICES[t]);
+    if (!missing.length) return;
+    await Promise.all(missing.map(async t => {
+        try {
+            const txt = await get(`${BASE}/actions/${t}_historique.csv`);
+            const rows = parseCSV(txt);
+            ALGO_PRICES[t] = rows
+                .map(r => ({ date: r.Date, close: parseFloat(r.Cloture) }))
+                .filter(r => r.date && !isNaN(r.close) && r.close > 0)
+                .sort((a, b) => a.date.localeCompare(b.date));
+        } catch (e) {
+            ALGO_PRICES[t] = [];
+        }
+    }));
+}
+
+async function ensureBRVMC() {
+    if (BRVMC_PRICES.length) return;
+    try {
+        const txt = await get(`${BASE}/indices/BRVMC_historique.csv`);
+        const rows = parseCSV(txt);
+        BRVMC_PRICES = rows
+            .map(r => ({ date: r.Date, close: parseFloat(r.Cloture) }))
+            .filter(r => r.date && !isNaN(r.close) && r.close > 0)
+            .sort((a, b) => a.date.localeCompare(b.date));
+    } catch { BRVMC_PRICES = []; }
+}
+
+function brvmcAtOrBefore(dateStr) {
+    if (!BRVMC_PRICES.length) return null;
+    let last = null;
+    for (const p of BRVMC_PRICES) {
+        if (p.date <= dateStr) last = p;
+        else break;
+    }
+    return last;
+}
+
+async function ensureDividendes() {
+    if (DIVIDENDES_FUTURS.length || DIVIDENDES_PASSES.length) return;
+    try {
+        const txt = await get(`${BASE}/dividendes/dividendes_a_venir.csv`);
+        DIVIDENDES_FUTURS = parseCSV(txt);
+    } catch { DIVIDENDES_FUTURS = []; }
+    try {
+        const txt = await get(`${BASE}/dividendes/dividendes_passes.csv`);
+        DIVIDENDES_PASSES = parseCSV(txt);
+    } catch { DIVIDENDES_PASSES = []; }
+}
+
+function priceAtOrBefore(ticker, dateStr) {
+    const ser = ALGO_PRICES[ticker] || [];
+    if (!ser.length) return null;
+    let last = null;
+    for (const p of ser) {
+        if (p.date <= dateStr) last = p;
+        else break;
+    }
+    return last;
+}
+
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+function initStartDateIfEmpty() {
+    const inp = document.getElementById('algo-startdate');
+    if (inp && !inp.value) inp.value = todayISO();
+}
+
+function renderAlgoMeta(generatedAt, startDate, capital) {
+    const meta = document.getElementById('algo-meta');
+    const genDate = generatedAt ? new Date(generatedAt) : null;
+    const nextRebal = genDate ? new Date(genDate.getTime() + 30 * 86400000) : null;
+    const today = new Date();
+    const daysUntilRebal = nextRebal ? Math.ceil((nextRebal - today) / 86400000) : null;
+    meta.innerHTML = `
+      <div class="metric"><div class="lbl">Allocation générée</div><div class="val" style="font-size:14px">${fmtDate(genDate)}</div></div>
+      <div class="metric"><div class="lbl">Prochain rebalancement</div><div class="val" style="font-size:14px">${fmtDate(nextRebal)}</div><div class="sub">${daysUntilRebal !== null ? (daysUntilRebal > 0 ? 'dans ' + daysUntilRebal + ' j' : 'attendu') : ''}</div></div>
+      <div class="metric"><div class="lbl">Date de suivi</div><div class="val" style="font-size:14px">${fmtDate(startDate)}</div></div>
+      <div class="metric"><div class="lbl">Capital total</div><div class="val">${fmtFCFA(capital)} F</div></div>
+    `;
+}
+
+async function loadAlgo() {
     const table = document.getElementById('algo-weights-table');
     const weights = ALGO_DATA.allocation || {};
     if (Object.keys(weights).length === 0) {
       table.innerHTML = '<div class="muted" style="padding:12px">Allocation indisponible — relancer le pipeline.</div>';
       return;
     }
-    const sorted = Object.entries(weights).sort((a,b) => b[1] - a[1]);
-    
+    initStartDateIfEmpty();
+    const capital = parseFloat(document.getElementById('algo-capital').value) || 0;
+    const feesPct = parseFloat(document.getElementById('algo-fees').value) || 0;
+    const feesRate = feesPct / 100;
+    const startDate = document.getElementById('algo-startdate').value || todayISO();
+    const sorted = Object.entries(weights).sort((a, b) => b[1] - a[1]);
+    const tickers = sorted.map(([t]) => t);
+
+    table.innerHTML = '<div class="loading"><span class="spinner"></span>Chargement des prix...</div>';
+    await Promise.all([ensureAlgoPrices(tickers), ensureDividendes(), ensureBRVMC()]);
+
+    // Construction de l'allocation réalisable
+    const rows = [];
+    let totalInvested = 0, totalFees = 0;
+    sorted.forEach(([t, w]) => {
+        const budgetBrut = capital * w;            // montant cible théorique
+        const budgetNet = budgetBrut * (1 - feesRate); // après frais courtage
+        const ref = priceAtOrBefore(t, startDate);
+        const price = ref ? ref.close : null;
+        const priceDate = ref ? ref.date : null;
+        let nbActions = 0, montantReel = 0, fees = 0, residual = budgetBrut;
+        let status = 'OK';
+        if (!price || price <= 0) {
+            status = 'PRIX_INDISPO';
+        } else {
+            nbActions = Math.floor(budgetNet / price);
+            montantReel = nbActions * price;
+            fees = montantReel * feesRate;
+            residual = budgetBrut - montantReel - fees;
+            if (nbActions === 0) status = 'INATTEIGNABLE';
+        }
+        totalInvested += montantReel;
+        totalFees += fees;
+        rows.push({ ticker: t, poids: w, budgetBrut, price, priceDate, nbActions, montantReel, fees, residual, status });
+    });
+    const totalAllocWeight = sorted.reduce((s, [, w]) => s + w, 0);
+    const unallocatedTheorique = capital * (1 - totalAllocWeight);
+    const cashTotal = capital - totalInvested - totalFees;
+
+    renderAlgoMeta(ALGO_DATA.generated_at || SIGNALS_META.generated_at, startDate, capital);
+
+    // Table
     table.innerHTML = `
-        <table class="fond-table">
-            <thead><tr><th>Actif</th><th style="text-align:right">Poids</th></tr></thead>
+        <table class="fond-table" style="font-size:12.5px">
+            <thead><tr>
+              <th>Actif</th>
+              <th style="text-align:right">Poids</th>
+              <th style="text-align:right">Prix unit.</th>
+              <th style="text-align:right">Nb actions</th>
+              <th style="text-align:right">Montant réel</th>
+              <th style="text-align:right">Frais</th>
+              <th style="text-align:right">Résidu</th>
+              <th>Statut</th>
+            </tr></thead>
             <tbody>
-                ${sorted.map(([t, w]) => `
+                ${rows.map(r => {
+                    const statusBadge = r.status === 'OK'
+                        ? '<span style="color:var(--up);font-size:11px">✓ OK</span>'
+                        : r.status === 'INATTEIGNABLE'
+                            ? '<span style="color:var(--down);font-size:11px">⚠ non atteignable</span>'
+                            : '<span style="color:var(--text-sec);font-size:11px">⚠ prix indispo.</span>';
+                    return `
                     <tr>
-                        <td>${t.replace('_', ' ').toUpperCase()}</td>
-                        <td style="text-align:right; font-weight:700">${(w * 100).toFixed(2)}%</td>
-                    </tr>
-                `).join('')}
+                        <td style="font-weight:600">${r.ticker.replace('_', ' ').toUpperCase()}</td>
+                        <td style="text-align:right">${(r.poids * 100).toFixed(2)}%</td>
+                        <td style="text-align:right">${r.price ? fmtFCFA(r.price) : '–'}</td>
+                        <td style="text-align:right;font-weight:700">${r.nbActions}</td>
+                        <td style="text-align:right;color:var(--blue);font-weight:700">${fmtFCFA(r.montantReel)}</td>
+                        <td style="text-align:right;color:var(--text-sec);font-size:11px">${fmtFCFA(r.fees)}</td>
+                        <td style="text-align:right;color:var(--text-sec);font-size:11px">${fmtFCFA(r.residual)}</td>
+                        <td>${statusBadge}</td>
+                    </tr>`;
+                }).join('')}
             </tbody>
         </table>
     `;
-    drawAlgoPie(sorted);
+
+    // Résumé
+    const utilRate = capital > 0 ? (totalInvested / capital * 100) : 0;
+    document.getElementById('algo-summary').innerHTML = `
+      <div class="metrics" style="margin-bottom:0">
+        <div class="metric"><div class="lbl">Investi (titres)</div><div class="val" style="font-size:15px;color:var(--blue)">${fmtFCFA(totalInvested)} F</div><div class="sub">${utilRate.toFixed(1)}% du capital</div></div>
+        <div class="metric"><div class="lbl">Frais courtage</div><div class="val" style="font-size:15px;color:var(--down)">${fmtFCFA(totalFees)} F</div><div class="sub">${feesPct.toFixed(2)}%</div></div>
+        <div class="metric"><div class="lbl">Cash résiduel</div><div class="val" style="font-size:15px;color:var(--text-sec)">${fmtFCFA(cashTotal)} F</div><div class="sub">non investi</div></div>
+        ${unallocatedTheorique > 1 ? `<div class="metric"><div class="lbl">Non alloué BL</div><div class="val" style="font-size:15px;color:var(--text-sec)">${((1-totalAllocWeight)*100).toFixed(2)}%</div></div>` : ''}
+      </div>
+    `;
+
+    // Pie sur montants réels
+    const realRows = rows.filter(r => r.montantReel > 0);
+    drawAlgoPie(realRows.map(r => [r.ticker, r.montantReel]));
+
+    // P&L, dividendes, plan d'action, simulation rebalancement
+    const capitalRef = capital;
+    renderDividendes(rows, startDate);
+    drawPortfolioPnl(rows, startDate, cashTotal, capitalRef);
+    renderActionPlan(rows, feesRate, startDate);
+    renderRebalSim(rows, feesRate, startDate);
 }
 
 function drawAlgoPie(data) {
     const ctx = document.getElementById('chart-algo-pie').getContext('2d');
     if (chartAlgoPie) chartAlgoPie.destroy();
-    const colors = ['#185FA5', '#1D9E75', '#E24B4A', '#F59E0B', '#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#6366F1', '#D946EF'];
-    
+    const colors = ['#185FA5', '#1D9E75', '#E24B4A', '#F59E0B', '#8B5CF6', '#EC4899', '#10B981', '#3B82F6', '#6366F1', '#D946EF', '#0EA5E9', '#84CC16', '#F97316', '#A855F7'];
+    const total = data.reduce((s, d) => s + d[1], 0) || 1;
     chartAlgoPie = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: data.map(d => d[0].split('_')[0]),
-            datasets: [{
-                data: data.map(d => d[1]),
-                backgroundColor: colors,
-                borderWidth: 0
-            }]
+            datasets: [{ data: data.map(d => d[1]), backgroundColor: colors, borderWidth: 0 }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            cutout: '70%'
+            plugins: {
+                legend: { display: true, position: 'right', labels: { font: { size: 10 }, boxWidth: 10, padding: 6, color: isDark() ? '#f0efe9' : '#1a1a18' } },
+                tooltip: {
+                    callbacks: {
+                        label: (c) => ` ${c.label}: ${fmtFCFA(c.parsed)} F (${(c.parsed / total * 100).toFixed(1)}%)`
+                    }
+                }
+            },
+            cutout: '60%'
         }
     });
+}
+
+function renderDividendes(rows, startDate) {
+    const el = document.getElementById('algo-dividendes');
+    const holdings = {};
+    rows.forEach(r => { if (r.nbActions > 0) holdings[tickerToDivFormat(r.ticker)] = r.nbActions; });
+    const futurs = DIVIDENDES_FUTURS
+        .filter(d => holdings[d.Ticker])
+        .filter(d => !d.Date_Detachement || d.Date_Detachement >= startDate)
+        .sort((a, b) => (a.Date_Detachement || '').localeCompare(b.Date_Detachement || ''));
+    if (!futurs.length) {
+        el.innerHTML = '<div style="color:var(--text-sec);font-size:13px;padding:8px">Aucun dividende à venir connu pour les actifs détenus à partir du ' + fmtDate(startDate) + '.</div>';
+        return;
+    }
+    let totalDiv = 0;
+    const lines = futurs.map(d => {
+        const nb = holdings[d.Ticker];
+        const montant = parseFrNum(d.Montant_Net_FCFA);
+        const total = nb * montant;
+        totalDiv += total;
+        return `<tr>
+          <td style="font-weight:600">${d.Ticker}</td>
+          <td>${d.Nom_Canonique || ''}</td>
+          <td style="text-align:right">${nb}</td>
+          <td style="text-align:right">${isFinite(montant) ? fmtFCFA(montant) : '–'} F</td>
+          <td style="text-align:right;font-weight:700;color:var(--green)">${fmtFCFA(total)} F</td>
+          <td>${fmtDate(d.Date_Detachement)}</td>
+          <td>${fmtDate(d.Date_Paiement)}</td>
+        </tr>`;
+    }).join('');
+    el.innerHTML = `
+      <table class="fond-table" style="font-size:12.5px">
+        <thead><tr>
+          <th>Ticker</th><th>Nom</th>
+          <th style="text-align:right">Nb actions</th>
+          <th style="text-align:right">Div/action</th>
+          <th style="text-align:right">Total à recevoir</th>
+          <th>Détachement</th><th>Paiement</th>
+        </tr></thead>
+        <tbody>${lines}</tbody>
+        <tfoot><tr style="border-top:1px solid var(--border-med)">
+          <td colspan="4" style="padding-top:10px;font-weight:700;font-size:11px;text-transform:uppercase;font-family:'Courier New',monospace;color:var(--text-sec)">Total dividendes attendus</td>
+          <td style="padding-top:10px;text-align:right;font-weight:700;color:var(--green);font-size:14px">${fmtFCFA(totalDiv)} F</td>
+          <td colspan="2"></td>
+        </tr></tfoot>
+      </table>
+    `;
+}
+
+function drawPortfolioPnl(rows, startDate, cashInitial, capitalRef) {
+    const ctx = document.getElementById('chart-algo-pnl').getContext('2d');
+    if (chartAlgoPnl) chartAlgoPnl.destroy();
+    const holdings = rows.filter(r => r.nbActions > 0).map(r => ({ ticker: r.ticker, nb: r.nbActions }));
+    if (!holdings.length) {
+        document.getElementById('algo-pnl-metrics').innerHTML = '<div class="err-box">Aucune action détenue — impossible de tracer l\'évolution.</div>';
+        return;
+    }
+
+    // Univers de dates: union entre startDate et aujourd'hui
+    const allDates = new Set();
+    holdings.forEach(h => {
+        (ALGO_PRICES[h.ticker] || []).forEach(p => { if (p.date >= startDate) allDates.add(p.date); });
+    });
+    const dates = Array.from(allDates).sort();
+    if (!dates.length) {
+        document.getElementById('algo-pnl-metrics').innerHTML = '<div class="err-box">Pas de prix postérieurs au ' + fmtDate(startDate) + '.</div>';
+        return;
+    }
+
+    // === Portefeuille Algo (rebalançable, ici figé à J0 avec dividendes) ===
+    const values = dates.map(d => {
+        let v = cashInitial;
+        holdings.forEach(h => {
+            const ref = priceAtOrBefore(h.ticker, d);
+            if (ref) v += h.nb * ref.close;
+        });
+        DIVIDENDES_FUTURS.concat(DIVIDENDES_PASSES).forEach(div => {
+            const tnorm = tickerFromDiv(div.Ticker || '');
+            const h = holdings.find(x => x.ticker === tnorm);
+            if (!h) return;
+            const dp = div.Date_Paiement;
+            if (dp && dp > startDate && dp <= d) {
+                const m = parseFrNum(div.Montant_Net_FCFA);
+                if (isFinite(m)) v += h.nb * m;
+            }
+        });
+        return v;
+    });
+
+    // === B&H = même allocation, figée, SANS dividendes (pour comparaison pure prix) ===
+    const valuesBH = dates.map(d => {
+        let v = cashInitial;
+        holdings.forEach(h => {
+            const ref = priceAtOrBefore(h.ticker, d);
+            if (ref) v += h.nb * ref.close;
+        });
+        return v;
+    });
+
+    // === BRVMC mis à l'échelle ===
+    const brvmcRef = brvmcAtOrBefore(dates[0]);
+    let valuesBRVMC = null;
+    if (brvmcRef && brvmcRef.close > 0) {
+        const refClose = brvmcRef.close;
+        valuesBRVMC = dates.map(d => {
+            const p = brvmcAtOrBefore(d);
+            return p ? capitalRef * (p.close / refClose) : null;
+        });
+    }
+
+    const initial = values[0];
+    const current = values[values.length - 1];
+    const pnl = current - initial;
+    const pnlPct = initial > 0 ? (pnl / initial * 100) : 0;
+    const days = Math.max(1, (new Date(dates[dates.length - 1]) - new Date(dates[0])) / 86400000);
+    const annualized = initial > 0 ? (Math.pow(current / initial, 365 / days) - 1) * 100 : 0;
+
+    const bhPnlPct = valuesBH[0] > 0 ? ((valuesBH[valuesBH.length - 1] / valuesBH[0]) - 1) * 100 : 0;
+    const brvmPnlPct = (valuesBRVMC && valuesBRVMC[0]) ? ((valuesBRVMC[valuesBRVMC.length - 1] / valuesBRVMC[0]) - 1) * 100 : null;
+    const alphaBH = pnlPct - bhPnlPct;
+    const alphaBRVMC = brvmPnlPct !== null ? pnlPct - brvmPnlPct : null;
+
+    document.getElementById('algo-pnl-metrics').innerHTML = `
+      <div class="metric"><div class="lbl">Valeur initiale</div><div class="val" style="font-size:15px">${fmtFCFA(initial)} F</div><div class="sub">${fmtDate(dates[0])}</div></div>
+      <div class="metric"><div class="lbl">Valeur actuelle</div><div class="val" style="font-size:15px">${fmtFCFA(current)} F</div><div class="sub">${fmtDate(dates[dates.length - 1])}</div></div>
+      <div class="metric"><div class="lbl">P&L Algo</div><div class="val ${pnl >= 0 ? 'up' : 'down'}" style="font-size:15px">${pnl >= 0 ? '+' : ''}${fmtFCFA(pnl)} F</div><div class="sub ${pnlPct >= 0 ? 'up' : 'down'}">${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)}%</div></div>
+      <div class="metric"><div class="lbl">Annualisé</div><div class="val ${annualized >= 0 ? 'up' : 'down'}" style="font-size:15px">${annualized >= 0 ? '+' : ''}${annualized.toFixed(2)}%</div><div class="sub">${Math.round(days)} j de suivi</div></div>
+      <div class="metric"><div class="lbl">B&H</div><div class="val ${bhPnlPct >= 0 ? 'up' : 'down'}" style="font-size:15px">${bhPnlPct >= 0 ? '+' : ''}${bhPnlPct.toFixed(2)}%</div><div class="sub">α vs Algo : ${alphaBH >= 0 ? '+' : ''}${alphaBH.toFixed(2)}%</div></div>
+      ${brvmPnlPct !== null ? `<div class="metric"><div class="lbl">BRVM Composite</div><div class="val ${brvmPnlPct >= 0 ? 'up' : 'down'}" style="font-size:15px">${brvmPnlPct >= 0 ? '+' : ''}${brvmPnlPct.toFixed(2)}%</div><div class="sub">α vs Algo : ${alphaBRVMC >= 0 ? '+' : ''}${alphaBRVMC.toFixed(2)}%</div></div>` : ''}
+    `;
+
+    const c = chartColors();
+    const datasets = [
+        { label: 'Portefeuille Algo', data: values, borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.10)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.15 },
+        { label: 'Buy & Hold (figé J0)', data: valuesBH, borderColor: '#6b6b67', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.15 },
+    ];
+    if (valuesBRVMC) {
+        datasets.push({ label: 'BRVM Composite', data: valuesBRVMC, borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.15 });
+    }
+    datasets.push({ label: 'Capital initial', data: dates.map(() => initial), borderColor: '#888', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false });
+
+    chartAlgoPnl = new Chart(ctx, {
+        type: 'line',
+        data: { labels: dates, datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: true, position: 'top', labels: { color: c.text, font: { size: 11 }, boxWidth: 14 } },
+                tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmtFCFA(ctx.parsed.y)} F` } }
+            },
+            scales: {
+                x: { ticks: { maxTicksLimit: 10, color: c.text, font: { size: 11 } }, grid: { display: false } },
+                y: { ticks: { color: c.text, font: { size: 11 }, callback: v => v.toLocaleString('fr-FR') }, grid: { color: c.grid } }
+            }
+        }
+    });
+}
+
+// ============================================================
+// Plan d'action : portefeuille actuel vs allocation cible
+// ============================================================
+function getHoldingsForTarget(rows) {
+    // Si USER_HOLDINGS n'est pas défini, on initialise sur la cible.
+    if (USER_HOLDINGS === null) {
+        USER_HOLDINGS = {};
+        rows.forEach(r => { USER_HOLDINGS[r.ticker] = r.nbActions; });
+    }
+    return USER_HOLDINGS;
+}
+
+function resetHoldingsToTarget() {
+    USER_HOLDINGS = null;
+    loadAlgo();
+}
+
+function clearHoldings() {
+    USER_HOLDINGS = {};
+    loadAlgo();
+}
+
+function updateHolding(ticker, value) {
+    if (USER_HOLDINGS === null) USER_HOLDINGS = {};
+    USER_HOLDINGS[ticker] = Math.max(0, parseInt(value) || 0);
+    renderActionPlan(window.__lastAlgoRows || [], window.__lastFeesRate || 0.01, window.__lastStartDate || todayISO());
+    renderRebalSim(window.__lastAlgoRows || [], window.__lastFeesRate || 0.01, window.__lastStartDate || todayISO());
+}
+
+function getProphetSignal(ticker) {
+    return SIGNALS_DATA[ticker] || null;
+}
+
+function actionLabel(deltaActions, currentNb, targetNb) {
+    if (targetNb === 0 && currentNb > 0) return { lbl: 'VENDRE TOUT', cls: 'sig-vente-fort', delta: -currentNb };
+    if (currentNb === 0 && targetNb > 0) return { lbl: 'ACHETER', cls: 'sig-achat-fort', delta: targetNb };
+    if (deltaActions > 0) return { lbl: 'RENFORCER +' + deltaActions, cls: 'sig-achat', delta: deltaActions };
+    if (deltaActions < 0) return { lbl: 'ALLÉGER ' + deltaActions, cls: 'sig-vente', delta: deltaActions };
+    return { lbl: 'CONSERVER', cls: 'sig-neutre', delta: 0 };
+}
+
+function renderActionPlan(rows, feesRate, startDate) {
+    window.__lastAlgoRows = rows;
+    window.__lastFeesRate = feesRate;
+    window.__lastStartDate = startDate;
+    const el = document.getElementById('algo-action-plan');
+    if (!rows.length) { el.innerHTML = ''; return; }
+
+    const holdings = getHoldingsForTarget(rows);
+    // Inclure aussi les tickers détenus mais absents de la cible
+    const allTickers = new Set(rows.map(r => r.ticker));
+    Object.keys(holdings).forEach(t => allTickers.add(t));
+
+    const rowsByTicker = {};
+    rows.forEach(r => { rowsByTicker[r.ticker] = r; });
+
+    const lines = Array.from(allTickers).map(t => {
+        const r = rowsByTicker[t];
+        const targetNb = r ? r.nbActions : 0;
+        const currentNb = holdings[t] || 0;
+        const price = r && r.price ? r.price : (priceAtOrBefore(t, startDate)?.close || null);
+        const delta = targetNb - currentNb;
+        const act = actionLabel(delta, currentNb, targetNb);
+        const sig = getProphetSignal(t);
+        const conflit = (sig && (sig.signal === 'VENTE' || sig.signal === 'VENTE FORTE') && currentNb > 0 && targetNb > 0);
+        const montantOp = price ? Math.abs(act.delta) * price : 0;
+        return { t, currentNb, targetNb, price, delta, act, sig, conflit, montantOp };
+    }).sort((a, b) => {
+        // Priorité d'affichage : actions à faire en premier, puis par |montant| décroissant
+        const aPrio = a.act.lbl === 'CONSERVER' ? 1 : 0;
+        const bPrio = b.act.lbl === 'CONSERVER' ? 1 : 0;
+        if (aPrio !== bPrio) return aPrio - bPrio;
+        return b.montantOp - a.montantOp;
+    });
+
+    el.innerHTML = `
+      <table class="fond-table" style="font-size:12.5px">
+        <thead><tr>
+          <th>Ticker</th>
+          <th style="text-align:right">Détenu</th>
+          <th style="text-align:right">Cible</th>
+          <th style="text-align:right">Prix</th>
+          <th>Action</th>
+          <th style="text-align:right">Montant op.</th>
+          <th>Signal Prophet</th>
+          <th>Date signal</th>
+          <th>Cible 30j</th>
+        </tr></thead>
+        <tbody>
+          ${lines.map(l => {
+            const sigBadge = l.sig
+              ? `<span class="sig-badge sig-${l.sig.signal.toLowerCase().replace(' ', '-')}">${l.sig.signal}</span>`
+              : '<span style="color:var(--text-sec);font-size:11px">–</span>';
+            const conflitTag = l.conflit ? ' <span style="color:var(--down);font-size:10px;font-weight:700" title="BL conserve mais Prophet signale VENTE">⚠ conflit</span>' : '';
+            return `<tr ${l.conflit ? 'style="background:rgba(226,75,74,0.06)"' : ''}>
+              <td style="font-weight:600">${l.t.replace('_', ' ').toUpperCase()}${conflitTag}</td>
+              <td style="text-align:right">
+                <input type="number" min="0" value="${l.currentNb}" style="width:70px;padding:3px 6px;font-size:12px;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text);text-align:right" oninput="updateHolding('${l.t}', this.value)"/>
+              </td>
+              <td style="text-align:right;font-weight:700">${l.targetNb}</td>
+              <td style="text-align:right">${l.price ? fmtFCFA(l.price) : '–'}</td>
+              <td><span class="sig-badge ${l.act.cls}">${l.act.lbl}</span></td>
+              <td style="text-align:right;font-weight:700;color:${l.act.delta > 0 ? 'var(--down)' : (l.act.delta < 0 ? 'var(--up)' : 'var(--text-sec)')}">${l.act.delta !== 0 ? (l.act.delta > 0 ? '-' : '+') + fmtFCFA(l.montantOp) : '–'}</td>
+              <td>${sigBadge} <span style="font-size:10px;color:var(--text-sec)">${l.sig ? l.sig.confidence : ''}</span></td>
+              <td style="font-family:'Courier New',monospace;font-size:11px;color:var(--text-sec)">${l.sig ? l.sig.last_date : '–'}</td>
+              <td style="font-size:11px;color:var(--text-sec)">${l.sig ? fmtFCFA(l.sig.target_30d) + ' F' : '–'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <p class="conseil-warn" style="margin-top:8px">
+        ⚠ conflit = BL maintient une position que Prophet signale en VENTE/VENTE FORTE. Le pipeline actuel suit l'allocation BL ; à toi de décider si tu suis le signal individuel ou non. Montant op. : <span style="color:var(--down)">rouge = sortie de cash (achat/renforcement)</span>, <span style="color:var(--up)">vert = entrée de cash (vente/allègement)</span>.
+      </p>
+    `;
+}
+
+// ============================================================
+// Simulateur de rebalancement : Idéal J vs Cycle BRVM J+2
+// ============================================================
+function addBusinessDays(dateStr, n) {
+    const d = new Date(dateStr);
+    let added = 0;
+    while (added < n) {
+        d.setDate(d.getDate() + 1);
+        const dow = d.getDay();
+        if (dow !== 0 && dow !== 6) added++;
+    }
+    return d.toISOString().slice(0, 10);
+}
+
+function renderRebalSim(rows, feesRate, startDate) {
+    const el = document.getElementById('algo-rebal-sim');
+    if (!rows.length) { el.innerHTML = ''; return; }
+
+    // Initialise input rebal-date si vide
+    const rebalInput = document.getElementById('rebal-date');
+    if (rebalInput && !rebalInput.value) rebalInput.value = startDate;
+    const jDate = rebalInput ? rebalInput.value : startDate;
+    const j2Date = addBusinessDays(jDate, 2);
+    const todayStr = todayISO();
+    const j2Reached = j2Date <= todayStr;
+
+    const holdings = getHoldingsForTarget(rows);
+    const rowsByTicker = {};
+    rows.forEach(r => { rowsByTicker[r.ticker] = r; });
+    const allTickers = new Set(rows.map(r => r.ticker));
+    Object.keys(holdings).forEach(t => allTickers.add(t));
+
+    let ventesIdeal = 0, achatsIdeal = 0, feesIdeal = 0;
+    let ventesJ = 0, achatsJ2 = 0, feesJ_v = 0, feesJ2_a = 0, slippage = 0;
+    const lignes = [];
+
+    Array.from(allTickers).forEach(t => {
+        const r = rowsByTicker[t];
+        const targetNb = r ? r.nbActions : 0;
+        const currentNb = holdings[t] || 0;
+        const delta = targetNb - currentNb;
+        if (delta === 0) return;
+
+        const priceJ_obj = priceAtOrBefore(t, jDate);
+        const priceJ2_obj = priceAtOrBefore(t, j2Date);
+        const priceJ = priceJ_obj ? priceJ_obj.close : null;
+        const priceJ2 = priceJ2_obj ? priceJ2_obj.close : null;
+        if (!priceJ) return;
+
+        if (delta < 0) {
+            // VENTE : exécutée à J dans les deux scénarios
+            const nb = Math.abs(delta);
+            const montantJ = nb * priceJ;
+            const fee = montantJ * feesRate;
+            ventesIdeal += montantJ; feesIdeal += fee;
+            ventesJ += montantJ; feesJ_v += fee;
+            lignes.push({ t, sens: 'VENTE', nb, priceJ, priceJ2, montantJ, montantJ2: montantJ, slip: 0 });
+        } else {
+            // ACHAT : idéal à J, réel à J+2
+            const montantJ = delta * priceJ;
+            const feeI = montantJ * feesRate;
+            achatsIdeal += montantJ; feesIdeal += feeI;
+            const usedJ2price = priceJ2 || priceJ;
+            const montantJ2 = delta * usedJ2price;
+            const feeR = montantJ2 * feesRate;
+            achatsJ2 += montantJ2; feesJ2_a += feeR;
+            slippage += (montantJ2 - montantJ);
+            lignes.push({ t, sens: 'ACHAT', nb: delta, priceJ, priceJ2: usedJ2price, montantJ, montantJ2, slip: montantJ2 - montantJ });
+        }
+    });
+
+    const cashApresVentesIdeal = ventesIdeal;
+    const cashApresVentesReel = ventesJ;  // disponible seulement à J+2
+    const besoinAchatsIdeal = achatsIdeal + feesIdeal;
+    const besoinAchatsReel = achatsJ2 + feesJ2_a;
+    const deficitIdeal = besoinAchatsIdeal - cashApresVentesIdeal;
+    const deficitReel = besoinAchatsReel - cashApresVentesReel;
+
+    el.innerHTML = `
+      <div class="info-grid" style="margin-bottom:10px">
+        <div class="info-card" style="background:var(--bg-sec)">
+          <h3>Scénario IDÉAL · ${fmtDate(jDate)} (J)</h3>
+          <div class="kv"><span class="k">Ventes (cash entrant)</span><span class="v up">+${fmtFCFA(cashApresVentesIdeal)} F</span></div>
+          <div class="kv"><span class="k">Achats (cash sortant)</span><span class="v down">-${fmtFCFA(achatsIdeal)} F</span></div>
+          <div class="kv"><span class="k">Frais courtage</span><span class="v">${fmtFCFA(feesIdeal)} F</span></div>
+          <div class="kv"><span class="k">Cash net requis</span><span class="v ${deficitIdeal > 0 ? 'down' : 'up'}">${deficitIdeal > 0 ? fmtFCFA(deficitIdeal) + ' F manquant' : 'Auto-financé'}</span></div>
+        </div>
+        <div class="info-card" style="background:var(--bg-sec)">
+          <h3>Scénario RÉEL · Ventes J ${fmtDate(jDate)} → Achats J+2 ${fmtDate(j2Date)} ${!j2Reached ? '<span style="font-size:10px;color:var(--text-sec);font-style:italic">(futur — prix J non encore observé)</span>' : ''}</h3>
+          <div class="kv"><span class="k">Cash dispo à J+2 (vs ventes J)</span><span class="v up">+${fmtFCFA(cashApresVentesReel)} F</span></div>
+          <div class="kv"><span class="k">Achats au prix J+2</span><span class="v down">-${fmtFCFA(achatsJ2)} F</span></div>
+          <div class="kv"><span class="k">Frais courtage</span><span class="v">${fmtFCFA(feesJ_v + feesJ2_a)} F</span></div>
+          <div class="kv"><span class="k">Slippage (J → J+2)</span><span class="v ${slippage > 0 ? 'down' : 'up'}">${slippage >= 0 ? '+' : ''}${fmtFCFA(slippage)} F</span></div>
+          <div class="kv"><span class="k">Cash net requis</span><span class="v ${deficitReel > 0 ? 'down' : 'up'}">${deficitReel > 0 ? fmtFCFA(deficitReel) + ' F manquant' : 'Auto-financé'}</span></div>
+        </div>
+      </div>
+      ${lignes.length ? `
+      <div style="overflow-x:auto">
+        <table class="fond-table" style="font-size:12px">
+          <thead><tr>
+            <th>Ticker</th><th>Sens</th>
+            <th style="text-align:right">Nb</th>
+            <th style="text-align:right">Prix J</th>
+            <th style="text-align:right">Prix J+2</th>
+            <th style="text-align:right">Montant J</th>
+            <th style="text-align:right">Montant J+2</th>
+            <th style="text-align:right">Slippage</th>
+          </tr></thead>
+          <tbody>
+            ${lignes.map(l => `<tr>
+              <td style="font-weight:600">${l.t.replace('_', ' ').toUpperCase()}</td>
+              <td><span class="sig-badge ${l.sens === 'VENTE' ? 'sig-vente' : 'sig-achat'}">${l.sens}</span></td>
+              <td style="text-align:right">${l.nb}</td>
+              <td style="text-align:right">${fmtFCFA(l.priceJ)}</td>
+              <td style="text-align:right">${fmtFCFA(l.priceJ2)}</td>
+              <td style="text-align:right">${fmtFCFA(l.montantJ)}</td>
+              <td style="text-align:right">${fmtFCFA(l.montantJ2)}</td>
+              <td style="text-align:right;color:${l.slip > 0 ? 'var(--down)' : (l.slip < 0 ? 'var(--up)' : 'var(--text-sec)')};font-weight:600">${l.slip === 0 ? '–' : ((l.slip >= 0 ? '+' : '') + fmtFCFA(l.slip))}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <p class="conseil-warn" style="margin-top:6px">
+        💡 <strong>Mécanique pratique :</strong> à J vous passez vos ordres de vente. Le cash de ces ventes n'est disponible qu'à J+2 (règlement-livraison BRVM). Si <em>Cash net requis</em> = 'manquant', il faut soit ajouter du cash externe, soit espacer les achats sur plusieurs sessions. Le <em>slippage</em> mesure l'écart de prix entre J et J+2 — c'est un coût implicite de la latence de règlement.
+      </p>` : '<div style="color:var(--text-sec);font-size:13px;padding:8px">Aucun ordre à passer — le portefeuille actuel correspond à la cible.</div>'}
+    `;
 }
 
 function loadBacktest() {
