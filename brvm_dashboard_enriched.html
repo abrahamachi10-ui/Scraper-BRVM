@@ -327,7 +327,18 @@
 </div>
 
 <script>
-const BASE = 'https://raw.githubusercontent.com/QuantDylane/Scraper-BRVM/main/data';
+// ── Configuration du dépôt GitHub ────────────────────────────────────────────
+// Le dépôt étant PRIVÉ, raw.githubusercontent.com renvoie 404 sans authentification.
+// On passe donc par l'API GitHub avec un jeton en lecture seule.
+const GH_OWNER  = 'DylaneTrader';
+const GH_REPO   = 'Scraper-BRVM';
+const GH_BRANCH = 'main';
+// ⚠️ Jeton à portée fine, lecture seule (Contents: Read-only) sur ce dépôt uniquement.
+//    NE JAMAIS publier ce fichier avec un jeton en clair sur une page publique.
+//    Laisser vide ('') si le dépôt devient public.
+const GH_TOKEN  = '';
+
+const BASE = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/data`;
 const TICKERS = ["ABJC_ci","BICB_bj","BICC_ci","BNBC_ci","BOABF_bf","BOAB_bj","BOAC_ci","BOAM_ml","BOAN_ne","BOAS_sn","CABC_ci","CBIBF_bf","CFAC_ci","CIEC_ci","ECOC_ci","ETIT_tg","FTSC_ci","LNBB_bj","NEIC_ci","NSBC_ci","NTLC_ci","ONTBF_bf","ORAC_ci","ORGT_tg","PALC_ci","PRSC_ci","SAFC_ci","SCRC_ci","SDCC_ci","SDSC_ci","SEMC_ci","SGBC_ci","SHEC_ci","SIBC_ci","SICC_ci","SIVC_ci","SLBC_ci","SMBC_ci","SNTS_sn","SOGC_ci","SPHC_ci","STAC_ci","STBC_ci","TTLC_ci","TTLS_sn","UNLC_ci","UNXC_ci"];
 const INDICES = ["BRVMC","BRVM30","BRVMPA","BRVMPR","BRVM_CB","BRVM_CD","BRVM_EN","BRVM_IN","BRVM_SF","BRVM_TEL","CAPIBRVM","SIKAIDX","SIKATR"];
 
@@ -361,7 +372,20 @@ async function loadSignalsData() {
 
 async function get(url) {
   if (cache[url]) return cache[url];
-  const r = await fetch(url);
+  let r;
+  // Dépôt privé : on passe par l'API GitHub avec le jeton, qui sert le contenu brut.
+  if (GH_TOKEN && url.startsWith('https://raw.githubusercontent.com/')) {
+    const path = url.replace(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/`, '');
+    const apiUrl = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}?ref=${GH_BRANCH}`;
+    r = await fetch(apiUrl, {
+      headers: {
+        'Authorization': `Bearer ${GH_TOKEN}`,
+        'Accept': 'application/vnd.github.raw'
+      }
+    });
+  } else {
+    r = await fetch(url);
+  }
   if (!r.ok) throw new Error(`HTTP ${r.status} – ${url.split('/').pop()}`);
   const text = await r.text();
   cache[url] = text;
