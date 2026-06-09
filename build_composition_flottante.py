@@ -151,7 +151,7 @@ def main() -> None:
         verif_out["Date"] = verif_out["Date"].dt.strftime("%Y-%m-%d")
 
     with pd.ExcelWriter(OUTPUT_XLSX, engine="openpyxl") as writer:
-        poids_out.to_excel(writer, sheet_name="Ponderations", index=False)
+        poids_out.to_excel(writer, sheet_name="Ponderations_totales", index=False)
         verif_out.to_excel(writer, sheet_name="Verification", index=False)
 
     print(
