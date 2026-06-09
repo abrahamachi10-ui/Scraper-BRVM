@@ -6,9 +6,10 @@
 """
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass, asdict
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -183,3 +184,57 @@ def detect_concentration(signals: Iterable[TickerSignal]) -> dict:
 def signals_to_dashboard_dict(signals: Iterable[TickerSignal]) -> dict:
     """Match the SIGNALS_DATA schema consumed by brvm_dashboard_enriched.html."""
     return {s.ticker: asdict(s) for s in signals}
+
+
+def signal_to_history_record(sig: TickerSignal, as_of: pd.Timestamp) -> dict:
+    """Compact per-date record stored in the signal history time-series."""
+    chg = (sig.target_30d / sig.last_price - 1.0) * 100.0 if sig.last_price > 0 else 0.0
+    return {
+        "as_of": as_of.date().isoformat(),
+        "signal": sig.signal,
+        "last_price": sig.last_price,
+        "target_30d": sig.target_30d,
+        "change_pct": round(chg, 2),
+        "confidence": sig.confidence,
+        "trend": sig.trend,
+    }
+
+
+def load_signal_history(path: Path) -> dict:
+    """Load the history JSON, returning an empty skeleton when absent/corrupt."""
+    if not path.exists():
+        return {"generated_at": None, "tickers": {}}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        log.warning("signal history unreadable (%s); starting fresh", exc)
+        return {"generated_at": None, "tickers": {}}
+    data.setdefault("tickers", {})
+    return data
+
+
+def upsert_signal_history(
+    history: dict,
+    signals: Iterable[TickerSignal],
+    as_of: pd.Timestamp,
+) -> dict:
+    """Insert/replace one snapshot per ticker for the given `as_of` date.
+
+    Records are deduped by `as_of` (latest write wins) and kept sorted ascending.
+    Mutates and returns `history`.
+    """
+    tickers = history.setdefault("tickers", {})
+    as_of_iso = as_of.date().isoformat()
+    for sig in signals:
+        series = tickers.setdefault(sig.ticker, [])
+        series[:] = [r for r in series if r.get("as_of") != as_of_iso]
+        series.append(signal_to_history_record(sig, as_of))
+        series.sort(key=lambda r: r["as_of"])
+    history["generated_at"] = datetime.now(tz=timezone.utc).isoformat()
+    return history
+
+
+def save_signal_history(path: Path, history: dict) -> None:
+    """Write the history JSON to disk (pretty-printed, UTF-8)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")

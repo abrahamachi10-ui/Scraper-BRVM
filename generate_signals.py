@@ -21,7 +21,10 @@ from quant.portfolio import optimize_portfolio
 from quant.signals import (
     detect_concentration,
     forecast_ticker,
+    load_signal_history,
+    save_signal_history,
     signals_to_dashboard_dict,
+    upsert_signal_history,
 )
 
 logging.basicConfig(
@@ -49,6 +52,7 @@ def main() -> int:
 
     actions_dir = args.root / "data" / "actions"
     out_signals = args.root / "data" / "signals" / "signals_latest.json"
+    out_history = args.root / "data" / "signals" / "signals_history.json"
     out_algo = args.root / "data" / "algo" / "portfolio_latest.json"
     out_signals.parent.mkdir(parents=True, exist_ok=True)
     out_algo.parent.mkdir(parents=True, exist_ok=True)
@@ -87,6 +91,12 @@ def main() -> int:
     }
     out_signals.write_text(json.dumps(signals_payload, indent=2, ensure_ascii=False))
     log.info("Wrote %s", out_signals)
+
+    # Append this snapshot to the rolling per-ticker signal history time-series.
+    history = load_signal_history(out_history)
+    upsert_signal_history(history, signals, as_of)
+    save_signal_history(out_history, history)
+    log.info("Updated %s (%d tickers tracked)", out_history, len(history.get("tickers", {})))
 
     # Portfolio.
     cov = estimate_covariance(results, as_of=as_of)

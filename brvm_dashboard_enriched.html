@@ -135,6 +135,25 @@
   .sig-vente-fort { background: #7F1D1D; color: #FFFFFF; }
   .sig-neutre { background: #F3F4F6; color: #374151; }
 
+  /* Signal history heatmap */
+  .hm-wrap { overflow-x: auto; border: 0.5px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); }
+  .hm-table { border-collapse: collapse; font-size: 11px; min-width: 100%; }
+  .hm-table th { padding: 7px 8px; font-size: 10px; font-weight: 700; color: var(--text-sec); font-family: 'Courier New', monospace; text-transform: uppercase; border-bottom: 0.5px solid var(--border-med); background: var(--bg-sec); white-space: nowrap; }
+  .hm-table th.hm-tk { text-align: left; position: sticky; left: 0; z-index: 2; }
+  .hm-table th.hm-dt { text-align: center; }
+  .hm-table td { padding: 0; border-bottom: 0.5px solid var(--border); border-right: 0.5px solid var(--border); }
+  .hm-table td.hm-tk { padding: 6px 10px; font-weight: 700; color: var(--text); white-space: nowrap; position: sticky; left: 0; background: var(--bg); z-index: 1; cursor: pointer; }
+  .hm-table td.hm-tk:hover { color: var(--blue); }
+  .hm-table tr.hm-active td.hm-tk { color: var(--blue); }
+  .hm-cell { width: 30px; height: 28px; display: block; }
+  .hm-cell[title] { cursor: default; }
+  .hm-af { background: #3B6D11; }
+  .hm-a  { background: #5FA8D3; }
+  .hm-n  { background: #D8DADE; }
+  .hm-v  { background: #C44A48; }
+  .hm-vf { background: #7F1D1D; }
+  .hm-empty { background: transparent; }
+
   /* Misc */
   .loading { text-align: center; padding: 2.5rem; color: var(--text-sec); font-size: 14px; }
   .err-box { color: #A32D2D; font-size: 13px; padding: 12px 16px; background: #FCEBEB; border-radius: var(--radius); border-left: 3px solid #E24B4A; }
@@ -161,6 +180,7 @@
     <button class="active" onclick="showTab('actions',this)"><i class="ti ti-chart-line" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Actions</button>
     <button onclick="showTab('indices',this)"><i class="ti ti-trending-up" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Indices</button>
     <button onclick="showTab('signals',this)"><i class="ti ti-robot" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Signaux Prophet</button>
+    <button onclick="showTab('sighist',this)"><i class="ti ti-timeline" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Historique signaux</button>
     <button onclick="showTab('societe',this)"><i class="ti ti-building" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Fiche société</button>
     <button onclick="showTab('fondamentaux',this)"><i class="ti ti-report" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Fondamentaux</button>
   </nav>
@@ -198,6 +218,29 @@
     </div>
     <div id="signals-content">
       <div class="loading"><span class="spinner"></span>Analyse des marchés en cours...</div>
+    </div>
+  </div>
+
+  <!-- HISTORIQUE SIGNAUX -->
+  <div id="panel-sighist" class="panel">
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Historique des signaux du portefeuille</h3>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.6">
+        Évolution dans le temps du signal Prophet (horizon 30j) pour chaque actif détenu.
+        Chaque colonne est un instantané recalculé à une date passée (fenêtre glissante 3 ans).
+        Le <strong>heatmap</strong> donne la vue d'ensemble ; sélectionnez un actif pour le détail
+        prix vs cible.
+      </p>
+      <div class="legend" style="margin-top:10px">
+        <span><i style="background:#3B6D11"></i>Achat fort</span>
+        <span><i style="background:#0369A1"></i>Achat</span>
+        <span><i style="background:#9CA3AF"></i>Neutre</span>
+        <span><i style="background:#991B1B"></i>Vente</span>
+        <span><i style="background:#7F1D1D"></i>Vente forte</span>
+      </div>
+    </div>
+    <div id="sighist-content">
+      <div class="loading"><span class="spinner"></span>Chargement de l'historique…</div>
     </div>
   </div>
 
@@ -264,7 +307,7 @@
       <h3>Évolution du portefeuille vs Buy &amp; Hold vs BRVM Composite</h3>
       <div class="legend">
         <span><i style="background:#185FA5"></i>Portefeuille Algo (rebalancé)</span>
-        <span><i style="background:#6b6b67"></i>Buy &amp; Hold (allocation figée à J0)</span>
+        <span><i style="background:#F59E0B"></i>Buy &amp; Hold (allocation figée à J0)</span>
         <span><i style="background:#1D9E75"></i>BRVM Composite</span>
         <span><i style="background:transparent;border-top:2px dashed #888;height:0"></i>Capital initial</span>
       </div>
@@ -317,7 +360,7 @@
       <h3>Performance Historique (Base 100)</h3>
       <div class="legend">
           <span><i style="background:#185FA5"></i>Stratégie Algo</span>
-          <span><i style="background:#6b6b67"></i>Buy & Hold</span>
+          <span><i style="background:#F59E0B"></i>Buy & Hold</span>
           <span><i style="background:#1D9E75"></i>BRVM Composite</span>
       </div>
       <div class="chart-wrap" style="height:350px"><canvas id="chart-backtest"></canvas></div>
@@ -350,6 +393,8 @@ const cache = {};
 let ALGO_DATA = { backtest: null, allocation: {} };
 let SIGNALS_DATA = {};
 let SIGNALS_META = { generated_at: null };
+let SIGNALS_HISTORY = { tickers: {} };
+let chartSigHist = null;
 
 async function loadSignalsData() {
   const sigUrl = `${BASE}/signals/signals_latest.json`;
@@ -368,6 +413,23 @@ async function loadSignalsData() {
     expected_volatility_30d: algoJson.expected_volatility_30d ?? null,
     sharpe_ratio_30d: algoJson.sharpe_ratio_30d ?? null,
   };
+  // Historique de signaux (optionnel — généré par build_signals_history.py).
+  try {
+    let histTxt;
+    try {
+      histTxt = await get(`${BASE}/signals/signals_history.json`);
+    } catch (ghErr) {
+      // Fallback dev local : fichier servi à côté du HTML (file:// ou serveur statique).
+      const localResp = await fetch('data/signals/signals_history.json');
+      if (!localResp.ok) throw ghErr;
+      histTxt = await localResp.text();
+    }
+    const histJson = JSON.parse(histTxt);
+    SIGNALS_HISTORY = { tickers: histJson.tickers || {}, generated_at: histJson.generated_at || null };
+  } catch (e) {
+    console.warn('signals_history.json not loaded:', e.message);
+    SIGNALS_HISTORY = { tickers: {} };
+  }
 }
 
 async function get(url) {
@@ -800,7 +862,7 @@ function drawPortfolioPnl(rows, startDate, cashInitial, capitalRef) {
     const c = chartColors();
     const datasets = [
         { label: 'Portefeuille Algo', data: values, borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.10)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.15 },
-        { label: 'Buy & Hold (figé J0)', data: valuesBH, borderColor: '#6b6b67', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.15 },
+        { label: 'Buy & Hold (figé J0)', data: valuesBH, borderColor: '#F59E0B', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.15, borderDash: [6, 3] },
     ];
     if (valuesBRVMC) {
         datasets.push({ label: 'BRVM Composite', data: valuesBRVMC, borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.15 });
@@ -1105,7 +1167,7 @@ function drawBacktestChart(d) {
             labels: d.dates,
             datasets: [
                 { label: 'Algo', data: d.algo, borderColor: '#185FA5', borderWidth: 2, pointRadius: 0, tension: 0.1 },
-                { label: 'B&H', data: d.bh, borderColor: '#6b6b67', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0.1 },
+                { label: 'B&H', data: d.bh, borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0.1 },
                 { label: 'BRVMC', data: d.bench, borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, tension: 0.1 }
             ]
         },
@@ -1128,6 +1190,7 @@ function showTab(name, btn) {
   if (name === 'societe') loadSociete();
   if (name === 'fondamentaux') loadFondamentaux();
   if (name === 'signals') loadSignals();
+  if (name === 'sighist') loadSigHist();
   if (name === 'algo') loadAlgo();
   if (name === 'backtest') loadBacktest();
 }
@@ -1290,6 +1353,162 @@ function loadSignals() {
       </table>
     </div>
   `;
+}
+
+// ── Historique des signaux ───────────────────────────────────────────────────
+const SIG_HM_CLASS = {
+  'ACHAT FORT': 'hm-af', 'ACHAT': 'hm-a', 'NEUTRE': 'hm-n',
+  'VENTE': 'hm-v', 'VENTE FORTE': 'hm-vf'
+};
+
+function sigHistTickers() {
+  // Tickers du portefeuille d'abord (ordre allocation décroissante), sinon tout l'historique.
+  const hist = SIGNALS_HISTORY.tickers || {};
+  const alloc = ALGO_DATA.allocation || {};
+  const inHist = Object.keys(hist);
+  const ordered = Object.keys(alloc)
+    .sort((a, b) => (alloc[b] || 0) - (alloc[a] || 0))
+    .filter(t => inHist.includes(t));
+  const rest = inHist.filter(t => !ordered.includes(t)).sort();
+  return [...ordered, ...rest];
+}
+
+function loadSigHist() {
+  const el = document.getElementById('sighist-content');
+  const hist = SIGNALS_HISTORY.tickers || {};
+  const tickers = sigHistTickers();
+  if (!tickers.length) {
+    el.innerHTML = `<div class="err-box">Aucun historique de signaux disponible. Lancez <code>python build_signals_history.py</code> puis poussez <code>data/signals/signals_history.json</code> sur GitHub.</div>`;
+    return;
+  }
+
+  // Union triée de toutes les dates.
+  const dateSet = new Set();
+  tickers.forEach(t => (hist[t] || []).forEach(r => dateSet.add(r.as_of)));
+  const dates = Array.from(dateSet).sort();
+
+  // Index rapide ticker -> { date -> record }.
+  const byTk = {};
+  tickers.forEach(t => {
+    byTk[t] = {};
+    (hist[t] || []).forEach(r => { byTk[t][r.as_of] = r; });
+  });
+
+  const fmtCol = d => { const [y, m] = d.split('-'); return `${m}/${y.slice(2)}`; };
+
+  const heat = `
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Heatmap des signaux dans le temps</h3>
+      <p style="font-size:12px;color:var(--text-sec);margin-bottom:10px">Cliquez sur un actif pour afficher le détail prix vs cible. Survolez une cellule pour la valeur exacte.</p>
+      <div class="hm-wrap">
+        <table class="hm-table">
+          <thead>
+            <tr>
+              <th class="hm-tk">Actif</th>
+              ${dates.map(d => `<th class="hm-dt">${fmtCol(d)}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${tickers.map(t => `
+              <tr data-tk="${t}">
+                <td class="hm-tk" onclick="selectSigHist('${t}')">${t.replace('_', ' ').toUpperCase()}</td>
+                ${dates.map(d => {
+                  const r = byTk[t][d];
+                  if (!r) return `<td><span class="hm-cell hm-empty"></span></td>`;
+                  const cls = SIG_HM_CLASS[r.signal] || 'hm-n';
+                  const tip = `${t.replace('_', ' ').toUpperCase()} · ${d}\n${r.signal} (${r.change_pct >= 0 ? '+' : ''}${r.change_pct}%)\nPrix ${r.last_price.toLocaleString('fr-FR')} → cible ${r.target_30d.toLocaleString('fr-FR')}`;
+                  return `<td><span class="hm-cell ${cls}" title="${tip}"></span></td>`;
+                }).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>Détail d'un actif — prix observé vs cible 30j</h3>
+      <div class="controls" style="margin-bottom:10px">
+        <select id="sel-sighist" onchange="selectSigHist(this.value)">
+          ${tickers.map(t => `<option value="${t}">${t.replace('_', ' ').toUpperCase()}</option>`).join('')}
+        </select>
+      </div>
+      <div id="sighist-detail-meta" class="metrics" style="margin-bottom:1rem"></div>
+      <div class="chart-wrap" style="height:340px"><canvas id="chart-sighist"></canvas></div>
+    </div>
+  `;
+  el.innerHTML = heat;
+  selectSigHist(tickers[0]);
+}
+
+function selectSigHist(ticker) {
+  const sel = document.getElementById('sel-sighist');
+  if (sel && sel.value !== ticker) sel.value = ticker;
+  document.querySelectorAll('#sighist-content tr[data-tk]').forEach(tr => {
+    tr.classList.toggle('hm-active', tr.getAttribute('data-tk') === ticker);
+  });
+  drawSigHistChart(ticker);
+}
+
+function drawSigHistChart(ticker) {
+  const ctx = document.getElementById('chart-sighist');
+  if (!ctx) return;
+  if (chartSigHist) chartSigHist.destroy();
+  const series = (SIGNALS_HISTORY.tickers || {})[ticker] || [];
+  const labels = series.map(r => r.as_of);
+  const prices = series.map(r => r.last_price);
+  const targets = series.map(r => r.target_30d);
+  const dotColors = series.map(r => {
+    const m = { 'ACHAT FORT': '#3B6D11', 'ACHAT': '#5FA8D3', 'NEUTRE': '#9CA3AF', 'VENTE': '#C44A48', 'VENTE FORTE': '#7F1D1D' };
+    return m[r.signal] || '#9CA3AF';
+  });
+
+  // Métadonnées de synthèse.
+  const meta = document.getElementById('sighist-detail-meta');
+  if (meta) {
+    const last = series[series.length - 1];
+    const counts = {};
+    series.forEach(r => { counts[r.signal] = (counts[r.signal] || 0) + 1; });
+    const dominant = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0] || '–';
+    const flips = series.reduce((n, r, i) => (i > 0 && r.signal !== series[i - 1].signal ? n + 1 : n), 0);
+    meta.innerHTML = last ? `
+      <div class="metric"><div class="lbl">Signal actuel</div><div class="val" style="font-size:15px"><span class="sig-badge sig-${last.signal.toLowerCase().replace(' ', '-')}">${last.signal}</span></div><div class="sub">${last.as_of}</div></div>
+      <div class="metric"><div class="lbl">Signal dominant</div><div class="val" style="font-size:15px">${dominant}</div><div class="sub">${series.length} relevés</div></div>
+      <div class="metric"><div class="lbl">Changements</div><div class="val" style="font-size:15px">${flips}</div><div class="sub">retournements de signal</div></div>
+      <div class="metric"><div class="lbl">Écart cible actuel</div><div class="val ${last.change_pct >= 0 ? 'up' : 'down'}" style="font-size:15px">${last.change_pct >= 0 ? '+' : ''}${last.change_pct}%</div><div class="sub">prix → cible 30j</div></div>
+    ` : '';
+  }
+
+  const c = chartColors();
+  chartSigHist = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Prix observé', data: prices, borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.08)', borderWidth: 2, fill: true, tension: 0.2,
+          pointRadius: 5, pointBackgroundColor: dotColors, pointBorderColor: dotColors },
+        { label: 'Cible 30j', data: targets, borderColor: '#F59E0B', borderWidth: 2, borderDash: [6, 3], pointRadius: 0, fill: false, tension: 0.2 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: c.text, font: { size: 11 }, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            afterBody: (items) => {
+              const r = series[items[0].dataIndex];
+              return r ? `Signal : ${r.signal} (${r.change_pct >= 0 ? '+' : ''}${r.change_pct}%)\nConfiance : ${r.confidence}` : '';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 12, color: c.text, font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: c.text, font: { size: 11 }, callback: v => v.toLocaleString('fr-FR') }, grid: { color: c.grid } }
+      }
+    }
+  });
 }
 
 async function loadSociete() {
