@@ -23,10 +23,11 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import json
-import logging
 import re
 from datetime import datetime
 from pathlib import Path
+
+from brvm_common import create_session as _create_session, setup_logging
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -58,17 +59,7 @@ PROGRESS_FILE = NEWS_DIR / "scraping_progress.json"
 # Logging
 # ---------------------------------------------------------------------------
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(
-            Path(__file__).parent / "scraper_news.log", encoding="utf-8"
-        ),
-        logging.StreamHandler(),
-    ],
-)
-log = logging.getLogger(__name__)
+log = setup_logging(Path(__file__).parent / "scraper_news.log")
 
 # ---------------------------------------------------------------------------
 # Session HTTP
@@ -76,24 +67,12 @@ log = logging.getLogger(__name__)
 
 
 def create_session() -> requests.Session:
-    s = requests.Session()
-    s.headers.update(
-        {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/125.0.0.0 Safari/537.36"
-            ),
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-            "Referer": BASE_URL,
-        }
+    return _create_session(
+        accept="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        referer=BASE_URL,
+        warmup_url=BASE_URL,
+        logger=log,
     )
-    try:
-        s.get(BASE_URL, timeout=30)
-    except Exception as e:
-        log.warning(f"Impossible d'initialiser la session : {e}")
-    return s
 
 
 # ---------------------------------------------------------------------------

@@ -23,7 +23,6 @@ Utilisation :
   python scraper_brvm.py test [TICKER]  # Test sur un seul ticker (défaut SGBC.ci)
 """
 
-import logging
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -33,6 +32,7 @@ import pandas as pd
 import requests
 
 from brvm_tickers import ACTIONS, INDICES, safe_filename
+from brvm_common import create_session as _create_session, setup_logging
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -63,15 +63,7 @@ INDICES_DIR = OUTPUT_DIR / "indices"
 # Logging
 # ---------------------------------------------------------------------------
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(Path(__file__).parent / "scraper.log", encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
-log = logging.getLogger(__name__)
+log = setup_logging(Path(__file__).parent / "scraper.log")
 
 # ---------------------------------------------------------------------------
 # Session HTTP
@@ -79,26 +71,13 @@ log = logging.getLogger(__name__)
 
 
 def create_session() -> requests.Session:
-    s = requests.Session()
-    s.headers.update(
-        {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/125.0.0.0 Safari/537.36"
-            ),
-            "Accept": "application/json, text/html, */*",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-            "Origin": BASE_URL,
-            "Referer": BASE_URL + "/marches/historiques/BRVMC",
-        }
+    return _create_session(
+        accept="application/json, text/html, */*",
+        origin=BASE_URL,
+        referer=BASE_URL + "/marches/historiques/BRVMC",
+        warmup_url=BASE_URL,
+        logger=log,
     )
-    # Initialiser les cookies
-    try:
-        s.get(BASE_URL, timeout=30)
-    except Exception as e:
-        log.warning(f"Impossible d'initialiser la session : {e}")
-    return s
 
 
 # ---------------------------------------------------------------------------

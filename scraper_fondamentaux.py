@@ -23,7 +23,6 @@ Utilisation :
 from __future__ import annotations
 
 import json
-import logging
 import re
 import sys
 import time
@@ -33,6 +32,11 @@ import requests
 from bs4 import BeautifulSoup
 
 from brvm_tickers import ACTIONS, safe_filename
+from brvm_common import (
+    create_session as _create_session,
+    setup_logging,
+    clean_ws as _clean,
+)
 
 BASE_URL = "https://www.sikafinance.com"
 SOCIETE_URL = BASE_URL + "/marches/societe/{ticker}"
@@ -40,17 +44,7 @@ REQUEST_DELAY = 0.5
 
 OUTPUT_DIR = Path(__file__).parent / "data" / "fondamentaux"
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(
-            Path(__file__).parent / "scraper_fondamentaux.log", encoding="utf-8"
-        ),
-        logging.StreamHandler(),
-    ],
-)
-log = logging.getLogger(__name__)
+log = setup_logging(Path(__file__).parent / "scraper_fondamentaux.log")
 
 EXPECTED_METRICS = {
     "Chiffre d'affaires",
@@ -64,28 +58,7 @@ EXPECTED_METRICS = {
 
 
 def create_session() -> requests.Session:
-    s = requests.Session()
-    s.headers.update(
-        {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/125.0.0.0 Safari/537.36"
-            ),
-            "Accept": "text/html,application/xhtml+xml",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-            "Referer": BASE_URL,
-        }
-    )
-    try:
-        s.get(BASE_URL, timeout=30)
-    except Exception as e:
-        log.warning(f"Init session: {e}")
-    return s
-
-
-def _clean(text: str) -> str:
-    return re.sub(r"\s+", " ", text.replace("\xa0", " ")).strip()
+    return _create_session(referer=BASE_URL, warmup_url=BASE_URL, logger=log)
 
 
 def _find_fondamentaux_table(soup: BeautifulSoup):
