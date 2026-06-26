@@ -41,11 +41,11 @@
                       "Entity": "Cours_Indices"
                     }
                   },
-                  "Property": "Volume FCFA"
+                  "Property": "Volume Indice FCFA"
                 }
               },
-              "queryRef": "Cours_Indices.Volume FCFA",
-              "nativeQueryRef": "Volume FCFA"
+              "queryRef": "Cours_Indices.Volume Indice FCFA",
+              "nativeQueryRef": "Volume Indice FCFA"
             }
           ]
         }

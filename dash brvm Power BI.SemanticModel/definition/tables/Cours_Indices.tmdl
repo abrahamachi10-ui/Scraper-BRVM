@@ -74,7 +74,7 @@ table Cours_Indices
 	measure 'BRVM 30' = CALCULATE([Niveau Indice], ALL(Indices_Info), Indices_Info[Symbol] = "BRVM30")
 		formatString: #,0.00
 
-	measure 'Volume FCFA' = SUM(Cours_Indices[Volume_FCFA])
+	measure 'Volume Indice FCFA' = SUM(Cours_Indices[Volume_FCFA])
 		formatString: #,0
 
 	partition Cours_Indices = m
