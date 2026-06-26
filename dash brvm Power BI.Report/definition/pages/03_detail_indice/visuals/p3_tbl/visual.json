@@ -1,0 +1,88 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "p3_tbl",
+  "position": {
+    "x": 868,
+    "y": 458,
+    "z": 0,
+    "width": 396,
+    "height": 250,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Indices_Info"
+                    }
+                  },
+                  "Property": "Nom"
+                }
+              },
+              "queryRef": "Indices_Info.Nom",
+              "nativeQueryRef": "Nom"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cours_Indices"
+                    }
+                  },
+                  "Property": "Niveau Indice"
+                }
+              },
+              "queryRef": "Cours_Indices.Niveau Indice",
+              "nativeQueryRef": "Niveau Indice"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Cours_Indices"
+                    }
+                  },
+                  "Property": "Perf Indice %"
+                }
+              },
+              "queryRef": "Cours_Indices.Perf Indice %",
+              "nativeQueryRef": "Perf Indice %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Comparaison des indices'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

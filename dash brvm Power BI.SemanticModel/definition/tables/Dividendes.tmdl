@@ -1,0 +1,84 @@
+table Dividendes
+
+	column Date_Scraping
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		summarizeBy: none
+		sourceColumn: Date_Scraping
+
+	column Ticker
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ticker
+
+	column TickerU
+		dataType: string
+		summarizeBy: none
+		sourceColumn: TickerU
+
+	column Nom_Canonique
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Nom_Canonique
+
+	column Exercice
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Exercice
+
+	column Statut
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Statut
+
+	column Date_Detachement
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		summarizeBy: none
+		sourceColumn: Date_Detachement
+
+	column Date_Paiement
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		summarizeBy: none
+		sourceColumn: Date_Paiement
+
+	column Montant_Net_FCFA
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Montant_Net_FCFA
+
+	column Rendement_Pct
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: average
+		sourceColumn: Rendement_Pct
+
+	measure 'Rendement Moyen %' = AVERAGE(Dividendes[Rendement_Pct])
+		formatString: #,0.00
+
+	measure 'Dividende Total FCFA' = SUM(Dividendes[Montant_Net_FCFA])
+		formatString: #,0
+
+	measure 'Nb Dividendes à venir' = CALCULATE(COUNTROWS(Dividendes), Dividendes[Statut] = "A venir")
+		formatString: #,0
+
+	partition Dividendes = m
+		mode: import
+		source =
+				let
+					csv = Csv.Document(fnContenu("data/dividendes/dividendes.csv"), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					prom = Table.PromoteHeaders(csv, [PromoteAllScalars = true]),
+					tk = Table.AddColumn(prom, "TickerU", each Text.Replace([Ticker], ".", "_"), type text),
+					sel = Table.SelectColumns(tk, {"Date_Scraping", "Ticker", "TickerU", "Nom_Canonique", "Exercice", "Statut", "Date_Detachement", "Date_Paiement", "Montant_Net_FCFA", "Rendement_Pct"}),
+					types = Table.TransformColumnTypes(sel, {
+						{"Date_Scraping", type date}, {"Exercice", Int64.Type},
+						{"Date_Detachement", type date}, {"Date_Paiement", type date},
+						{"Montant_Net_FCFA", type number}, {"Rendement_Pct", type number}
+					}, "fr-FR")
+				in
+					types
+
+	annotation PBI_ResultType = Table

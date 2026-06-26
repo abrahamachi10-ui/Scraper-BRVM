@@ -39,3 +39,7 @@ grid_search.csv
 
 # Avis dividendes (PDFs téléchargés, ~100 MB, reproductibles via le scraper)
 data/avis_dividendes/
+
+# Power BI — caches et réglages locaux (par utilisateur, non versionnés)
+**/.pbi/cache.abf
+**/.pbi/localSettings.json

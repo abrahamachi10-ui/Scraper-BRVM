@@ -1,0 +1,101 @@
+table Cours_Indices
+
+	column Date
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Symbol
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Symbol
+
+	column Ouverture
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: Ouverture
+
+	column Plus_Haut
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: Plus_Haut
+
+	column Plus_Bas
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: Plus_Bas
+
+	column Cloture
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: Cloture
+
+	column Volume_Titres
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Volume_Titres
+
+	column Volume_FCFA
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Volume_FCFA
+
+	column Variation_Pct
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: Variation_Pct
+
+	measure 'Niveau Indice' = CALCULATE(LASTNONBLANKVALUE(Calendrier[Date], MAX(Cours_Indices[Cloture])))
+		formatString: #,0.00
+
+	measure 'Premier Niveau' = CALCULATE(FIRSTNONBLANKVALUE(Calendrier[Date], MAX(Cours_Indices[Cloture])))
+		formatString: #,0.00
+
+	measure 'Perf Indice %' = DIVIDE([Niveau Indice] - [Premier Niveau], [Premier Niveau])
+		formatString: 0.0%
+
+	measure 'Plus Haut Indice' = MAX(Cours_Indices[Plus_Haut])
+		formatString: #,0.00
+
+	measure 'Plus Bas Indice' = MIN(Cours_Indices[Plus_Bas])
+		formatString: #,0.00
+
+	measure 'BRVM Composite' = CALCULATE([Niveau Indice], ALL(Indices_Info), Indices_Info[Symbol] = "BRVMC")
+		formatString: #,0.00
+
+	measure 'BRVM 30' = CALCULATE([Niveau Indice], ALL(Indices_Info), Indices_Info[Symbol] = "BRVM30")
+		formatString: #,0.00
+
+	measure 'Volume FCFA' = SUM(Cours_Indices[Volume_FCFA])
+		formatString: #,0
+
+	partition Cours_Indices = m
+		mode: import
+		source =
+				let
+					liste = fnListerDossier("indices"),
+					csvOnly = Table.SelectRows(liste, each Text.EndsWith([name], "_historique.csv")),
+					avecSym = Table.AddColumn(csvOnly, "Symbol", each Text.BeforeDelimiter([name], "_historique"), type text),
+					avecTab = Table.AddColumn(avecSym, "Tab", each
+						Table.PromoteHeaders(
+							Csv.Document(fnContenu("data/indices/" & [name]), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+							[PromoteAllScalars = true])),
+					garde = Table.SelectColumns(avecTab, {"Symbol", "Tab"}),
+					exp = Table.ExpandTableColumn(garde, "Tab", {"Date", "Ouverture", "Plus_Haut", "Plus_Bas", "Cloture", "Volume_Titres", "Volume_FCFA", "Variation_Pct"}),
+					types = Table.TransformColumnTypes(exp, {
+						{"Date", type date},
+						{"Ouverture", type number}, {"Plus_Haut", type number}, {"Plus_Bas", type number}, {"Cloture", type number},
+						{"Volume_Titres", Int64.Type}, {"Volume_FCFA", type number}, {"Variation_Pct", type number}
+					}, "fr-FR")
+				in
+					types
+
+	annotation PBI_ResultType = Table

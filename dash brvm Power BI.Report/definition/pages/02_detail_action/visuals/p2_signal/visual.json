@@ -1,0 +1,116 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "p2_signal",
+  "position": {
+    "x": 16,
+    "y": 330,
+    "z": 0,
+    "width": 260,
+    "height": 224,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "multiRowCard",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Signaux"
+                    }
+                  },
+                  "Property": "Signal Actuel"
+                }
+              },
+              "queryRef": "Signaux.Signal Actuel",
+              "nativeQueryRef": "Signal Actuel"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Signaux"
+                    }
+                  },
+                  "Property": "Confiance Actuelle"
+                }
+              },
+              "queryRef": "Signaux.Confiance Actuelle",
+              "nativeQueryRef": "Confiance Actuelle"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Signaux"
+                    }
+                  },
+                  "Property": "Tendance Actuelle"
+                }
+              },
+              "queryRef": "Signaux.Tendance Actuelle",
+              "nativeQueryRef": "Tendance Actuelle"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Signaux"
+                    }
+                  },
+                  "Property": "Cible 30j"
+                }
+              },
+              "queryRef": "Signaux.Cible 30j",
+              "nativeQueryRef": "Cible 30j"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Signaux"
+                    }
+                  },
+                  "Property": "Potentiel %"
+                }
+              },
+              "queryRef": "Signaux.Potentiel %",
+              "nativeQueryRef": "Potentiel %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Signal quantitatif (30j)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

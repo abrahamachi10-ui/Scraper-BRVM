@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "dash brvm Power BI"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "1993b0c1-fe5d-4a7f-bd5f-8ba54eba6430"
+  }
+}

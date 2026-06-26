@@ -1,0 +1,68 @@
+/// Propriétaire du dépôt GitHub (compte ou organisation).
+expression Owner = "DylaneTrader" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// Nom du dépôt GitHub contenant les données scrapées.
+expression Repo = "Scraper-BRVM" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// Branche du dépôt à lire (par défaut "main").
+expression Branche = "main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+/// Jeton d'accès GitHub (PAT, lecture seule sur Contents) — dépôt privé.
+/// LAISSER VIDE dans le dépôt. Le renseigner localement dans Power BI Desktop
+/// (sans committer la modif) et/ou dans les paramètres du jeu de données après
+/// publication sur le service Power BI.
+expression TokenGitHub = "" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=false]
+
+/// Liste les fichiers d'un sous-dossier de data/ via l'API GitHub authentifiée.
+/// Renvoie une table {name, download_url}. Base URL statique => compatible
+/// avec l'actualisation planifiée du service Power BI (aucune passerelle requise).
+expression fnListerDossier =
+		(sousDossier as text) as table =>
+			let
+				reponse = Web.Contents(
+					"https://api.github.com",
+					[
+						RelativePath = "repos/" & Owner & "/" & Repo & "/contents/data/" & sousDossier,
+						Query = [ #"ref" = Branche ],
+						Headers = [
+							Accept = "application/vnd.github+json",
+							#"X-GitHub-Api-Version" = "2022-11-28",
+							#"User-Agent" = "PowerBI-BRVM",
+							Authorization = "Bearer " & TokenGitHub
+						]
+					]
+				),
+				json = Json.Document(reponse),
+				tab = Table.FromRecords(json),
+				sel = Table.SelectColumns(tab, {"name", "download_url"})
+			in
+				sel
+
+/// Télécharge le contenu binaire d'un fichier du dépôt (chemin relatif depuis la racine),
+/// via l'API Contents avec Accept=raw (gère les dépôts privés sans URL signée temporaire).
+expression fnContenu =
+		(chemin as text) as binary =>
+			Web.Contents(
+				"https://api.github.com",
+				[
+					RelativePath = "repos/" & Owner & "/" & Repo & "/contents/" & chemin,
+					Query = [ #"ref" = Branche ],
+					Headers = [
+						Accept = "application/vnd.github.raw",
+						#"X-GitHub-Api-Version" = "2022-11-28",
+						#"User-Agent" = "PowerBI-BRVM",
+						Authorization = "Bearer " & TokenGitHub
+					]
+				]
+			)
+
+/// Convertit un texte BRVM (séparateurs d'espaces/insécables, virgule décimale, %)
+/// en nombre. Renvoie null si non convertible.
+expression fnNombre =
+		(valeur as any) as nullable number =>
+			if valeur = null then null
+			else
+				let
+					txt = Text.Replace(Text.Replace(Text.Replace(Text.From(valeur), "%", ""), Character.FromNumber(160), ""), " ", "")
+				in
+					try Number.FromText(txt, "fr-FR") otherwise null

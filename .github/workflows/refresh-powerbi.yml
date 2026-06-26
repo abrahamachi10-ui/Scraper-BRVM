@@ -1,0 +1,75 @@
+name: Rafraîchir le dataset Power BI
+
+# Déclenche une actualisation du jeu de données Power BI une fois que les
+# nouvelles données (cours + signaux) ont été committées dans le dépôt.
+on:
+  workflow_run:
+    workflows: ["Génération signaux Prophet + Black-Litterman"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brvm-refresh-powerbi
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    # En mode workflow_run, ne lancer que si la génération de signaux a réussi.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      PBI_TENANT_ID: ${{ secrets.PBI_TENANT_ID }}
+      PBI_CLIENT_ID: ${{ secrets.PBI_CLIENT_ID }}
+      PBI_CLIENT_SECRET: ${{ secrets.PBI_CLIENT_SECRET }}
+      PBI_GROUP_ID: ${{ secrets.PBI_GROUP_ID }}
+      PBI_DATASET_ID: ${{ secrets.PBI_DATASET_ID }}
+
+    steps:
+      - name: Vérifier la configuration des secrets
+        id: check
+        run: |
+          if [ -z "$PBI_TENANT_ID" ] || [ -z "$PBI_CLIENT_ID" ] || [ -z "$PBI_CLIENT_SECRET" ] || [ -z "$PBI_GROUP_ID" ] || [ -z "$PBI_DATASET_ID" ]; then
+            echo "Secrets Power BI non configurés — étape ignorée (voir README, section Power BI)."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Obtenir un jeton Azure AD (service principal)
+        if: steps.check.outputs.configured == 'true'
+        id: token
+        run: |
+          TOKEN=$(curl -s -X POST \
+            "https://login.microsoftonline.com/${PBI_TENANT_ID}/oauth2/v2.0/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=client_credentials" \
+            -d "client_id=${PBI_CLIENT_ID}" \
+            -d "client_secret=${PBI_CLIENT_SECRET}" \
+            -d "scope=https://analysis.windows.net/powerbi/api/.default" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Impossible d'obtenir un jeton Azure AD (vérifier tenant/client/secret)."
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "access_token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Déclencher l'actualisation du dataset
+        if: steps.check.outputs.configured == 'true'
+        run: |
+          HTTP=$(curl -s -o /tmp/resp.txt -w "%{http_code}" -X POST \
+            "https://api.powerbi.com/v1.0/myorg/groups/${PBI_GROUP_ID}/datasets/${PBI_DATASET_ID}/refreshes" \
+            -H "Authorization: Bearer ${{ steps.token.outputs.access_token }}" \
+            -H "Content-Type: application/json" \
+            -d '{"type":"Full","notifyOption":"NoNotification"}')
+          echo "HTTP $HTTP"
+          cat /tmp/resp.txt || true
+          if [ "$HTTP" != "202" ]; then
+            echo "::error::Échec du déclenchement de l'actualisation (HTTP $HTTP)."
+            exit 1
+          fi
+          echo "Actualisation Power BI déclenchée avec succès."

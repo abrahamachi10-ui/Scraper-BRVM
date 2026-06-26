@@ -35,10 +35,13 @@ Modules partagés :
 Le moteur quantitatif est dans `quant/` (backtest, covariance, portfolio,
 signals), couvert par la suite de tests `tests/`.
 
-### 3. Dashboard
+### 3. Dashboards
 
-`brvm_dashboard_enriched.html` — dashboard statique consolidant cours,
-fondamentaux, dividendes et signaux à partir des fichiers de `data/`.
+- `brvm_dashboard_enriched.html` — dashboard statique consolidant cours,
+  fondamentaux, dividendes et signaux à partir des fichiers de `data/`.
+- `dash brvm Power BI.pbip` — rapport Power BI multi-pages (Vue d'ensemble,
+  Détail action, Détail indice) connecté au dépôt GitHub et actualisé
+  automatiquement. Voir [POWERBI.md](POWERBI.md).
 
 ## Installation
 
@@ -72,6 +75,7 @@ pytest                             # tests du moteur quant
 | `scrape-daily.yml` | Scraping quotidien (cours, dividendes, news) à 17h00 UTC, puis commit de `data/` |
 | `generate-signals.yml` | Génération des signaux Prophet + Black-Litterman (tests en gate) |
 | `daily_update.yml` | Régénération de la composition flottante après scraping |
+| `refresh-powerbi.yml` | Déclenche l'actualisation du dataset Power BI après génération des signaux (voir [POWERBI.md](POWERBI.md)) |
 
 Déclenchement manuel via *Actions → (workflow) → Run workflow*.
 

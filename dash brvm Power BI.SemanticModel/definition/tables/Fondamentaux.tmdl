@@ -1,0 +1,49 @@
+table Fondamentaux
+
+	column Ticker
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ticker
+
+	column Metric
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Metric
+
+	column Annee
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Annee
+
+	column Valeur
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: Valeur
+
+	measure 'Valeur Fondamentale' = SUM(Fondamentaux[Valeur])
+		formatString: #,0.00
+
+	partition Fondamentaux = m
+		mode: import
+		source =
+				let
+					liste = fnListerDossier("fondamentaux"),
+					only = Table.SelectRows(liste, each Text.EndsWith([name], "_fondamentaux.json")),
+					rec = Table.AddColumn(only, "R", each Json.Document(fnContenu("data/fondamentaux/" & [name]))),
+					tk = Table.AddColumn(rec, "Ticker", each Text.Replace(try [R][ticker] otherwise "", ".", "_"), type text),
+					metr = Table.AddColumn(tk, "Metrics", each try Record.ToTable([R][metrics]) otherwise null),
+					sel = Table.SelectColumns(metr, {"Ticker", "Metrics"}),
+					expM = Table.ExpandTableColumn(sel, "Metrics", {"Name", "Value"}, {"Metric", "AnneeRec"}),
+					yt = Table.AddColumn(expM, "YT", each try Record.ToTable([AnneeRec]) otherwise null),
+					sel2 = Table.SelectColumns(yt, {"Ticker", "Metric", "YT"}),
+					expY = Table.ExpandTableColumn(sel2, "YT", {"Name", "Value"}, {"Annee", "ValeurTxt"}),
+					val = Table.AddColumn(expY, "Valeur", each fnNombre([ValeurTxt]), type number),
+					types = Table.TransformColumnTypes(val, {{"Annee", Int64.Type}}),
+					garde = Table.SelectColumns(types, {"Ticker", "Metric", "Annee", "Valeur"}),
+					filtre = Table.SelectRows(garde, each [Valeur] <> null)
+				in
+					filtre
+
+	annotation PBI_ResultType = Table

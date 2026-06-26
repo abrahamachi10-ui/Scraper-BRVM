@@ -1,0 +1,119 @@
+table Societes
+
+	column Ticker
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Ticker
+
+	column TickerDot
+		dataType: string
+		summarizeBy: none
+		sourceColumn: TickerDot
+
+	column Nom
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Nom
+
+	column ISIN
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ISIN
+
+	column Pays
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Pays
+
+	column PER
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: average
+		sourceColumn: PER
+
+	column BNPA
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: average
+		sourceColumn: BNPA
+
+	column Dividende
+		dataType: double
+		formatString: #,0
+		summarizeBy: average
+		sourceColumn: Dividende
+
+	column ChiffreAffaires
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: ChiffreAffaires
+
+	column ResultatNet
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: ResultatNet
+
+	column NombreActions
+		dataType: double
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: NombreActions
+
+	column Flottant_Pct
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: average
+		sourceColumn: Flottant_Pct
+
+	column Description
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Description
+
+	measure 'Nb Sociétés' = DISTINCTCOUNT(Societes[Ticker])
+		formatString: #,0
+
+	measure 'PER Moyen' = AVERAGE(Societes[PER])
+		formatString: #,0.00
+
+	measure 'Capitalisation Estimée' = SUMX(VALUES(Societes[Ticker]), [Dernier Cours] * CALCULATE(MAX(Societes[NombreActions])))
+		formatString: #,0
+
+	partition Societes = m
+		mode: import
+		source =
+				let
+					liste = fnListerDossier("societes"),
+					only = Table.SelectRows(liste, each Text.EndsWith([name], "_societe.json")),
+					rec = Table.AddColumn(only, "R", each Json.Document(fnContenu("data/societes/" & [name]))),
+					tickerDot = Table.AddColumn(rec, "TickerDot", each try [R][ticker] otherwise null, type text),
+					ticker = Table.AddColumn(tickerDot, "Ticker", each Text.Replace([TickerDot], ".", "_"), type text),
+					nom = Table.AddColumn(ticker, "Nom", each try [R][Nom] otherwise null, type text),
+					isin = Table.AddColumn(nom, "ISIN", each try [R][ISIN] otherwise null, type text),
+					per = Table.AddColumn(isin, "PER", each fnNombre(try [R][PER] otherwise null), type number),
+					bnpa = Table.AddColumn(per, "BNPA", each fnNombre(try [R][BNPA] otherwise null), type number),
+					div = Table.AddColumn(bnpa, "Dividende", each fnNombre(try [R][Dividende] otherwise null), type number),
+					ca = Table.AddColumn(div, "ChiffreAffaires", each fnNombre(try Record.Field([R], "Chiffre d'affaires") otherwise null), type number),
+					rn = Table.AddColumn(ca, "ResultatNet", each fnNombre(try Record.Field([R], "Résultat net") otherwise null), type number),
+					nba = Table.AddColumn(rn, "NombreActions", each fnNombre(try [R][Nombre_Actions] otherwise null), type number),
+					flot = Table.AddColumn(nba, "Flottant_Pct", each fnNombre(try [R][Flottant_Pct] otherwise null), type number),
+					desc = Table.AddColumn(flot, "Description", each try Record.Field([R], "La société") otherwise null, type text),
+					pays = Table.AddColumn(desc, "Pays", each
+						let s = Text.AfterDelimiter([TickerDot], ".")
+						in
+							if s = "ci" then "Côte d'Ivoire"
+							else if s = "sn" then "Sénégal"
+							else if s = "bj" then "Bénin"
+							else if s = "bf" then "Burkina Faso"
+							else if s = "ml" then "Mali"
+							else if s = "ne" then "Niger"
+							else if s = "tg" then "Togo"
+							else s, type text),
+					garde = Table.SelectColumns(pays, {"Ticker", "TickerDot", "Nom", "ISIN", "Pays", "PER", "BNPA", "Dividende", "ChiffreAffaires", "ResultatNet", "NombreActions", "Flottant_Pct", "Description"})
+				in
+					garde
+
+	annotation PBI_ResultType = Table

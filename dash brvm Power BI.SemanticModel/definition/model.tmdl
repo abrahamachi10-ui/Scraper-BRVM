@@ -1,0 +1,24 @@
+model Model
+	culture: fr-FR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: fr-FR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation PBI_QueryOrder = ["Owner", "Repo", "Branche", "TokenGitHub", "fnListerDossier", "fnContenu", "fnNombre", "Calendrier", "Societes", "Cours_Actions", "Indices_Info", "Cours_Indices", "Signaux", "Dividendes", "Fondamentaux"]
+
+ref table Calendrier
+ref table Societes
+ref table Cours_Actions
+ref table Indices_Info
+ref table Cours_Indices
+ref table Signaux
+ref table Dividendes
+ref table Fondamentaux
+
+ref cultureInfo fr-FR

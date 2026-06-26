@@ -1,0 +1,118 @@
+table Signaux
+
+	column Ticker
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ticker
+
+	column Prix
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: Prix
+
+	column DatePrix
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		summarizeBy: none
+		sourceColumn: DatePrix
+
+	column Signal
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Signal
+
+	column Confiance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Confiance
+
+	column Cible30j
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: Cible30j
+
+	column Tendance
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Tendance
+
+	column Borne_Basse
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: Borne_Basse
+
+	column Borne_Haute
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: Borne_Haute
+
+	column Rendement_Annualise
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: Rendement_Annualise
+
+	column Nb_Observations
+		dataType: int64
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: Nb_Observations
+
+	column Potentiel_Pct
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: Potentiel_Pct
+
+	measure 'Nb Signaux' = COUNTROWS(Signaux)
+		formatString: #,0
+
+	measure 'Nb ACHAT' = CALCULATE(COUNTROWS(Signaux), Signaux[Signal] IN {"ACHAT", "ACHAT FORT"})
+		formatString: #,0
+
+	measure 'Nb VENTE' = CALCULATE(COUNTROWS(Signaux), Signaux[Signal] IN {"VENTE", "VENTE FORTE"})
+		formatString: #,0
+
+	measure 'Nb NEUTRE' = CALCULATE(COUNTROWS(Signaux), Signaux[Signal] = "NEUTRE")
+		formatString: #,0
+
+	measure 'Potentiel Moyen %' = AVERAGE(Signaux[Potentiel_Pct])
+		formatString: 0.0%
+
+	measure 'Signal Actuel' = SELECTEDVALUE(Signaux[Signal])
+
+	measure 'Confiance Actuelle' = SELECTEDVALUE(Signaux[Confiance])
+
+	measure 'Tendance Actuelle' = SELECTEDVALUE(Signaux[Tendance])
+
+	measure 'Cible 30j' = SELECTEDVALUE(Signaux[Cible30j])
+		formatString: #,0
+
+	measure 'Potentiel %' = SELECTEDVALUE(Signaux[Potentiel_Pct])
+		formatString: 0.0%
+
+	partition Signaux = m
+		mode: import
+		source =
+				let
+					doc = Json.Document(fnContenu("data/signals/signals_latest.json")),
+					s = doc[signals],
+					t = Record.ToTable(s),
+					e = Table.ExpandRecordColumn(t, "Value",
+						{"last_price", "last_date", "signal", "confidence", "target_30d", "trend", "yhat_lower", "yhat_upper", "train_annualized_return", "train_rows"},
+						{"Prix", "DatePrix", "Signal", "Confiance", "Cible30j", "Tendance", "Borne_Basse", "Borne_Haute", "Rendement_Annualise", "Nb_Observations"}),
+					ren = Table.RenameColumns(e, {{"Name", "Ticker"}}),
+					pot = Table.AddColumn(ren, "Potentiel_Pct", each if [Prix] = null or [Prix] = 0 then null else [Cible30j] / [Prix] - 1, type number),
+					types = Table.TransformColumnTypes(pot, {
+						{"Prix", type number}, {"DatePrix", type date}, {"Cible30j", type number},
+						{"Borne_Basse", type number}, {"Borne_Haute", type number},
+						{"Rendement_Annualise", type number}, {"Nb_Observations", Int64.Type}
+					})
+				in
+					types
+
+	annotation PBI_ResultType = Table
