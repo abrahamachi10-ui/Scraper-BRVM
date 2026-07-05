@@ -165,6 +165,44 @@
   .societe-header { margin-bottom: 1.25rem; }
   .societe-header .snom { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
   .societe-header .ssub { font-size: 13px; color: var(--text-sec); margin-top: 3px; font-family: 'Courier New', monospace; }
+
+  /* ── Verdict / score composite ─────────────────────────────────────────── */
+  .verdict-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem 1.4rem; margin-bottom: 1.25rem; }
+  .verdict-main { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .verdict-badge { padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 700; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: .04em; }
+  .verdict-achat-fort  { background: #EAF3DE; color: #3B6D11; }
+  .verdict-achat       { background: #E6F1FB; color: #185FA5; }
+  .verdict-surveiller  { background: #FFF7ED; color: #9A3412; }
+  .verdict-conserver   { background: #F3F4F6; color: #374151; }
+  .verdict-reduire     { background: #FEF3C7; color: #92400E; }
+  .verdict-vendre      { background: #FEF2F2; color: #991B1B; }
+  @media (prefers-color-scheme: dark) {
+    .verdict-achat-fort  { background: #27500A; color: #C0DD97; }
+    .verdict-achat       { background: #0C447C; color: #B5D4F4; }
+    .verdict-surveiller  { background: #431407; color: #FDBA74; }
+    .verdict-conserver   { background: #1F2937; color: #9CA3AF; }
+    .verdict-reduire     { background: #451A03; color: #FCD34D; }
+    .verdict-vendre      { background: #450A0A; color: #FCA5A5; }
+  }
+  .verdict-score { font-size: 13px; color: var(--text-sec); font-family: 'Courier New', monospace; }
+  .score-bar-track { position: relative; height: 8px; background: var(--bg-ter); border-radius: 4px; overflow: visible; margin-bottom: 12px; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+  .score-bar-zero { position: absolute; top: -2px; bottom: -2px; width: 2px; left: 50%; background: var(--border-med); border-radius: 1px; }
+  .tech-indicators { display: flex; flex-wrap: wrap; gap: 7px; }
+  .tech-chip { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 6px; font-size: 12px; border: 0.5px solid var(--border); background: var(--bg-sec); }
+  .tech-chip .chip-score { font-weight: 700; font-family: 'Courier New', monospace; font-size: 13px; min-width: 24px; }
+  .tech-chip.up  { border-color: rgba(29,158,117,0.35); background: rgba(29,158,117,0.07); }
+  .tech-chip.down{ border-color: rgba(153,60,29,0.35);  background: rgba(153,60,29,0.07);  }
+  .tech-chip.up   .chip-score { color: var(--up); }
+  .tech-chip.down .chip-score { color: var(--down); }
+  .chart-wrap-sm { position: relative; width: 100%; height: 150px; background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: .6rem; margin-top: .5rem; }
+
+  /* ── Screening table ───────────────────────────────────────────────────── */
+  .screen-table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: var(--bg); border-radius: var(--radius-lg); overflow: hidden; border: 0.5px solid var(--border); }
+  .screen-table th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 700; color: var(--text-sec); font-family: 'Courier New', monospace; text-transform: uppercase; border-bottom: 0.5px solid var(--border-med); background: var(--bg-sec); white-space: nowrap; }
+  .screen-table td { padding: 9px 12px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  .screen-table tr:hover td { background: var(--bg-sec); }
+  .screen-table tr { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -183,6 +221,7 @@
     <button onclick="showTab('sighist',this)"><i class="ti ti-timeline" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Historique signaux</button>
     <button onclick="showTab('societe',this)"><i class="ti ti-building" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Fiche société</button>
     <button onclick="showTab('fondamentaux',this)"><i class="ti ti-report" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Fondamentaux</button>
+    <button onclick="showTab('analyse',this)"><i class="ti ti-adjustments-horizontal" style="margin-right:5px;font-size:14px;vertical-align:-2px"></i>Analyse & Screening</button>
   </nav>
 
   <!-- ACTIONS -->
@@ -354,18 +393,151 @@
     </div>
   </div>
 
+  <!-- ANALYSE & SCREENING -->
+  <div id="panel-analyse" class="panel">
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>Score composite par actif — RSI · MACD · Tendance · Liquidité · Prophet · PER</h3>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.6">
+        Chaque actif est noté de <strong>−12 à +12</strong> sur 6 dimensions. Cliquez sur un actif pour ouvrir l'analyse détaillée dans l'onglet Fondamentaux.
+      </p>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="preset" onclick="loadAnalyse('portfolio')">Portefeuille algo</button>
+        <button class="preset" onclick="loadAnalyse('all')">Tous les actifs BRVM</button>
+      </div>
+    </div>
+    <div id="analyse-content"><div class="loading"><span class="spinner"></span>Cliquez sur un bouton pour lancer l'analyse…</div></div>
+  </div>
+
   <!-- BACKTEST -->
   <div id="panel-backtest" class="panel">
-    <div class="info-card" style="margin-bottom:1.5rem">
-      <h3>Performance Historique (Base 100)</h3>
-      <div class="legend">
-          <span><i style="background:#185FA5"></i>Stratégie Algo</span>
-          <span><i style="background:#F59E0B"></i>Buy & Hold</span>
-          <span><i style="background:#1D9E75"></i>BRVM Composite</span>
+
+    <!-- ── Configuration ─────────────────────────────────────────────── -->
+    <div class="info-card" style="margin-bottom:1.25rem">
+      <h3>Paramètres généraux</h3>
+      <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:10px;align-items:flex-end">
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Capital initial (FCFA)</div>
+          <input type="number" id="bt-capital" value="1000000" min="0" step="100000" style="width:160px;padding:8px 10px;font-size:14px;font-weight:700;font-family:inherit;border:0.5px solid var(--border-med);border-radius:var(--radius);background:var(--bg);color:var(--text)"/>
+        </div>
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Frais courtage (%)</div>
+          <input type="number" id="bt-fees" value="1.0" min="0" max="10" step="0.1" style="width:90px;padding:8px 10px;font-size:14px;font-weight:700;font-family:inherit;border:0.5px solid var(--border-med);border-radius:var(--radius);background:var(--bg);color:var(--text)"/>
+        </div>
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Durée (années)</div>
+          <input type="number" id="bt-years" value="10" min="1" max="20" style="width:80px;padding:8px 10px;font-size:14px;font-weight:700;font-family:inherit;border:0.5px solid var(--border-med);border-radius:var(--radius);background:var(--bg);color:var(--text)"/>
+        </div>
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Fréquence de revue</div>
+          <select id="bt-freq" style="padding:8px 10px;font-size:13px;font-family:inherit;border:0.5px solid var(--border-med);border-radius:var(--radius);background:var(--bg);color:var(--text)">
+            <option value="1">Mensuelle</option>
+            <option value="3">Trimestrielle</option>
+            <option value="6">Semestrielle</option>
+          </select>
+        </div>
       </div>
-      <div class="chart-wrap" style="height:350px"><canvas id="chart-backtest"></canvas></div>
     </div>
-    <div id="backtest-metrics" class="metrics"></div>
+
+    <!-- ── Règles par signal ──────────────────────────────────────────── -->
+    <div class="info-card" style="margin-bottom:1.25rem">
+      <h3>Règles d'exécution par signal</h3>
+      <p style="font-size:12px;color:var(--text-sec);margin-top:4px;margin-bottom:12px">Budget actif = Capital ÷ Nb actifs (équipondéré). Les achats arrachent au minimum 1 action (arrondi au supérieur ↑).</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+        <div style="padding:12px;border-radius:var(--radius);background:rgba(59,109,17,0.07);border:0.5px solid rgba(59,109,17,0.25)">
+          <div style="font-size:11px;font-weight:700;color:#3B6D11;font-family:'Courier New',monospace;text-transform:uppercase;margin-bottom:8px">● ACHAT FORT</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+            Acheter <input type="number" id="bt-pct-af" value="100" min="0" max="200" step="5" style="width:62px;padding:4px 6px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>% du budget actif
+          </div>
+        </div>
+        <div style="padding:12px;border-radius:var(--radius);background:rgba(24,95,165,0.07);border:0.5px solid rgba(24,95,165,0.25)">
+          <div style="font-size:11px;font-weight:700;color:#185FA5;font-family:'Courier New',monospace;text-transform:uppercase;margin-bottom:8px">● ACHAT</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+            Acheter <input type="number" id="bt-pct-a" value="50" min="0" max="200" step="5" style="width:62px;padding:4px 6px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>% du budget actif
+          </div>
+        </div>
+        <div style="padding:12px;border-radius:var(--radius);background:var(--bg-sec);border:0.5px solid var(--border)">
+          <div style="font-size:11px;font-weight:700;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;margin-bottom:8px">● NEUTRE</div>
+          <div style="font-size:13px;color:var(--text-sec)">Conserver la position — aucune action</div>
+        </div>
+        <div style="padding:12px;border-radius:var(--radius);background:rgba(196,74,72,0.07);border:0.5px solid rgba(196,74,72,0.25)">
+          <div style="font-size:11px;font-weight:700;color:#C44A48;font-family:'Courier New',monospace;text-transform:uppercase;margin-bottom:8px">● VENTE</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+            Vendre <input type="number" id="bt-pct-v" value="50" min="0" max="100" step="5" style="width:62px;padding:4px 6px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>% de la position (↑)
+          </div>
+        </div>
+        <div style="padding:12px;border-radius:var(--radius);background:rgba(127,29,29,0.1);border:0.5px solid rgba(127,29,29,0.3)">
+          <div style="font-size:11px;font-weight:700;color:#7F1D1D;font-family:'Courier New',monospace;text-transform:uppercase;margin-bottom:8px">● VENTE FORTE</div>
+          <div style="display:flex;align-items:center;gap:7px;font-size:13px">
+            Vendre <input type="number" id="bt-pct-vf" value="100" min="0" max="100" step="5" style="width:62px;padding:4px 6px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>% de la position
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Source des signaux ─────────────────────────────────────────── -->
+    <div class="info-card" style="margin-bottom:1.25rem">
+      <h3>Source des signaux & seuils</h3>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:10px;align-items:flex-start">
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Source</div>
+          <select id="bt-signal-src" style="padding:8px 10px;font-size:13px;font-family:inherit;border:0.5px solid var(--border-med);border-radius:var(--radius);background:var(--bg);color:var(--text)">
+            <option value="rsi">RSI(14) seul</option>
+            <option value="macd">MACD seul</option>
+            <option value="rsi_macd">RSI + MACD combinés</option>
+          </select>
+        </div>
+        <div>
+          <div class="lbl" style="font-size:11px;color:var(--text-sec);font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">Seuils RSI (utilisés si source = RSI ou combiné)</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;align-items:center">
+            <span style="color:var(--text-sec)">Achat Fort &lt;</span><input type="number" id="bt-rsi-af" value="25" min="1" max="49" style="width:46px;padding:4px 6px;font-size:12px;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text);font-weight:700"/>
+            <span style="color:var(--text-sec)">Achat &lt;</span><input type="number" id="bt-rsi-a" value="40" min="1" max="60" style="width:46px;padding:4px 6px;font-size:12px;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text);font-weight:700"/>
+            <span style="color:var(--text-sec)">Vente &gt;</span><input type="number" id="bt-rsi-v" value="60" min="40" max="90" style="width:46px;padding:4px 6px;font-size:12px;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text);font-weight:700"/>
+            <span style="color:var(--text-sec)">Vente Forte &gt;</span><input type="number" id="bt-rsi-vf" value="75" min="50" max="99" style="width:46px;padding:4px 6px;font-size:12px;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text);font-weight:700"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Autres paramètres ─────────────────────────────────────────── -->
+    <div class="info-card" style="margin-bottom:1.25rem">
+      <h3>Autres contraintes de gestion</h3>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:13px">
+        <label style="display:flex;align-items:center;gap:7px">
+          Max par actif
+          <input type="number" id="bt-max-pos" value="25" min="5" max="100" step="5" style="width:58px;padding:5px 7px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>
+          % du capital
+          <span style="font-size:11px;color:var(--text-sec)">(évite la sur-concentration)</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:7px">
+          Réserve cash mini
+          <input type="number" id="bt-cash-reserve" value="5" min="0" max="50" step="1" style="width:52px;padding:5px 7px;font-size:13px;font-weight:700;border:0.5px solid var(--border-med);border-radius:4px;background:var(--bg);color:var(--text)"/>
+          % du capital
+          <span style="font-size:11px;color:var(--text-sec)">(poche liquide garantie)</span>
+        </label>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;font-size:13px">
+        <strong>Univers d'actifs :</strong>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="bt-universe" value="portfolio" checked/> Portefeuille algo</label>
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="bt-universe" value="all"/> Tous BRVM (47 actifs)</label>
+      </div>
+    </div>
+
+    <button onclick="runBtBacktest()" style="padding:10px 26px;font-size:14px;font-family:inherit;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;letter-spacing:.01em;margin-bottom:1.5rem">▶ Lancer le backtest</button>
+
+    <!-- ── Résultats ──────────────────────────────────────────────────── -->
+    <div id="backtest-result" style="display:none">
+      <div id="backtest-metrics" class="metrics" style="margin-bottom:1.25rem"></div>
+      <div class="info-card" style="margin-bottom:1.25rem">
+        <h3>Performance historique — Base 100</h3>
+        <div class="legend" style="margin-top:6px">
+          <span><i style="background:#185FA5"></i>Stratégie signaux</span>
+          <span><i style="background:#F59E0B"></i>Buy &amp; Hold (équipondéré)</span>
+          <span><i style="background:#1D9E75"></i>BRVM Composite</span>
+        </div>
+        <div class="chart-wrap" style="height:380px;margin-top:8px"><canvas id="chart-backtest"></canvas></div>
+      </div>
+      <div id="bt-trades-section"></div>
+    </div>
   </div>
 </div>
 
@@ -1131,55 +1303,334 @@ function renderRebalSim(rows, feesRate, startDate) {
     `;
 }
 
-function loadBacktest() {
-    const metricsEl = document.getElementById('backtest-metrics');
-    const d = ALGO_DATA.backtest;
-    if (!d || !d.algo || d.algo.length === 0) {
-      metricsEl.innerHTML = '<div class="muted" style="padding:12px">Backtest indisponible — relancer le pipeline.</div>';
-      return;
-    }
-    const finalAlgo = d.algo[d.algo.length - 1];
-    const finalBH = d.bh[d.bh.length - 1];
-    const finalBench = d.bench[d.bench.length - 1];
-    
-    const perfAlgo = finalAlgo - 100;
-    const perfBH = finalBH - 100;
-    const perfBench = finalBench - 100;
+// ═══════════════════════════════════════════════════════════════════════════
+// MOTEUR DE BACKTEST CONFIGURABLE
+// ═══════════════════════════════════════════════════════════════════════════
 
-    metricsEl.innerHTML = `
-        <div class="metric"><div class="lbl">Perf. Algo</div><div class="val up">+${perfAlgo.toFixed(1)}%</div></div>
-        <div class="metric"><div class="lbl">Perf. Buy&Hold</div><div class="val" style="color:var(--text-sec)">+${perfBH.toFixed(1)}%</div></div>
-        <div class="metric"><div class="lbl">Perf. BRVMC</div><div class="val up">+${perfBench.toFixed(1)}%</div></div>
-        <div class="metric"><div class="lbl">Alpha vs Bench</div><div class="val up">+${(perfAlgo - perfBench).toFixed(1)}%</div></div>
-    `;
-    
-    drawBacktestChart(d);
+function btSignalFromRSI(rsiVal, af, a, v, vf) {
+  if (rsiVal === null || isNaN(rsiVal)) return 'NEUTRE';
+  if (rsiVal < af) return 'ACHAT FORT';
+  if (rsiVal < a)  return 'ACHAT';
+  if (rsiVal > vf) return 'VENTE FORTE';
+  if (rsiVal > v)  return 'VENTE';
+  return 'NEUTRE';
 }
 
-function drawBacktestChart(d) {
-    const ctx = document.getElementById('chart-backtest').getContext('2d');
-    if (chartBacktest) chartBacktest.destroy();
-    const c = chartColors();
-    
-    chartBacktest = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: d.dates,
-            datasets: [
-                { label: 'Algo', data: d.algo, borderColor: '#185FA5', borderWidth: 2, pointRadius: 0, tension: 0.1 },
-                { label: 'B&H', data: d.bh, borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, tension: 0.1 },
-                { label: 'BRVMC', data: d.bench, borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, tension: 0.1 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { maxTicksLimit: 10, color: c.text }, grid: { display: false } },
-                y: { ticks: { color: c.text }, grid: { color: c.grid } }
-            }
+function btSignalFromMACD(h, hPrev) {
+  if (h === null || isNaN(h)) return 'NEUTRE';
+  const rising = h > (hPrev ?? 0);
+  if (h > 0 && rising)  return 'ACHAT FORT';
+  if (h > 0)            return 'ACHAT';
+  if (h < 0 && !rising) return 'VENTE FORTE';
+  if (h < 0)            return 'VENTE';
+  return 'NEUTRE';
+}
+
+function btCombineSignals(s1, s2) {
+  const m = { 'ACHAT FORT': 2, 'ACHAT': 1, 'NEUTRE': 0, 'VENTE': -1, 'VENTE FORTE': -2 };
+  const r = { 2:'ACHAT FORT', 1:'ACHAT', 0:'NEUTRE', '-1':'VENTE', '-2':'VENTE FORTE' };
+  return r[String(Math.round((m[s1] + m[s2]) / 2))] || 'NEUTRE';
+}
+
+// Recherche dichotomique : indice du dernier élément rows[i].Date <= d
+function btBsearch(rows, d) {
+  let lo = 0, hi = rows.length - 1, res = -1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    if (rows[mid].Date <= d) { res = mid; lo = mid + 1; } else hi = mid - 1;
+  }
+  return res;
+}
+
+async function runBtBacktest() {
+  const resultEl = document.getElementById('backtest-result');
+  const metricsEl = document.getElementById('backtest-metrics');
+  resultEl.style.display = 'block';
+  metricsEl.innerHTML = '<div class="loading"><span class="spinner"></span>Calcul en cours…</div>';
+  document.getElementById('bt-trades-section').innerHTML = '';
+
+  // ── Lire les paramètres ──────────────────────────────────────────────
+  const capital      = parseFloat(document.getElementById('bt-capital').value)      || 1000000;
+  const feesRate     = (parseFloat(document.getElementById('bt-fees').value)        || 1) / 100;
+  const durationYrs  = parseInt(document.getElementById('bt-years').value)          || 10;
+  const rebalMonths  = parseInt(document.getElementById('bt-freq').value)           || 1;
+  const pctAF        = (parseFloat(document.getElementById('bt-pct-af').value)      || 100) / 100;
+  const pctA         = (parseFloat(document.getElementById('bt-pct-a').value)       || 50)  / 100;
+  const pctV         = (parseFloat(document.getElementById('bt-pct-v').value)       || 50)  / 100;
+  const pctVF        = (parseFloat(document.getElementById('bt-pct-vf').value)      || 100) / 100;
+  const maxPosPct    = (parseFloat(document.getElementById('bt-max-pos').value)     || 25)  / 100;
+  const cashResPct   = (parseFloat(document.getElementById('bt-cash-reserve').value)|| 5)   / 100;
+  const sigSrc       = document.getElementById('bt-signal-src').value;
+  const rsiAF        = parseFloat(document.getElementById('bt-rsi-af').value) || 25;
+  const rsiA         = parseFloat(document.getElementById('bt-rsi-a').value)  || 40;
+  const rsiV         = parseFloat(document.getElementById('bt-rsi-v').value)  || 60;
+  const rsiVF        = parseFloat(document.getElementById('bt-rsi-vf').value) || 75;
+  const universe     = document.querySelector('input[name="bt-universe"]:checked').value;
+
+  // ── Sélection des actifs ─────────────────────────────────────────────
+  let tickers;
+  if (universe === 'all') {
+    tickers = TICKERS;
+  } else {
+    const alloc = ALGO_DATA.allocation || {};
+    tickers = Object.keys(alloc).length
+      ? Object.keys(alloc).sort((a, b) => (alloc[b] || 0) - (alloc[a] || 0))
+      : TICKERS.slice(0, 15);
+  }
+
+  // ── Charger les prix ─────────────────────────────────────────────────
+  const priceMap = {};
+  await Promise.all(tickers.map(async t => {
+    try {
+      const txt = await get(`${BASE}/actions/${t}_historique.csv`);
+      priceMap[t] = parseCSV(txt)
+        .filter(r => parseFloat(r.Cloture) > 0)
+        .sort((a, b) => a.Date.localeCompare(b.Date));
+    } catch { priceMap[t] = []; }
+  }));
+  await ensureBRVMC();
+
+  // ── Plage de dates ───────────────────────────────────────────────────
+  const today = todayISO();
+  const startDt = new Date(today);
+  startDt.setFullYear(startDt.getFullYear() - durationYrs);
+  const startISO = startDt.toISOString().slice(0, 10);
+
+  const allDatesSet = new Set();
+  tickers.forEach(t => priceMap[t].forEach(r => { if (r.Date >= startISO) allDatesSet.add(r.Date); }));
+  BRVMC_PRICES.forEach(p => { if (p.date >= startISO) allDatesSet.add(p.date); });
+  const allDates = Array.from(allDatesSet).sort();
+
+  if (allDates.length < 2) {
+    metricsEl.innerHTML = '<div class="err-box">Pas assez de données pour cette durée. Réduisez la durée ou changez l\'univers.</div>';
+    return;
+  }
+
+  // ── Dates de rebalancement (premier jour ouvré de chaque période) ────
+  const rebalDates = [];
+  let lastPeriodKey = '';
+  allDates.forEach(d => {
+    const dt = new Date(d);
+    let key;
+    if (rebalMonths === 1) key = d.slice(0, 7);
+    else { key = `${dt.getFullYear()}-${Math.floor(dt.getMonth() / rebalMonths)}`; }
+    if (key !== lastPeriodKey) { rebalDates.push(d); lastPeriodKey = key; }
+  });
+
+  // ── Précalcul des indicateurs sur l'historique complet ───────────────
+  const rsiIdx  = {}; // ticker -> Float64Array de valeurs RSI indexées par position dans priceMap[t]
+  const macdIdx = {}; // ticker -> { histo[], prev[] }
+  tickers.forEach(t => {
+    const rows = priceMap[t];
+    const closes = rows.map(r => parseFloat(r.Cloture));
+    rsiIdx[t]  = calcRSI(closes).values;       // même longueur que rows
+    macdIdx[t] = calcMACD(closes).histogram;   // même longueur que rows
+  });
+
+  // Récupérer le signal pour un ticker à une date
+  function getSignal(t, d) {
+    const rows = priceMap[t];
+    const idx  = btBsearch(rows, d);
+    if (idx < 0) return 'NEUTRE';
+    const rsiVal  = rsiIdx[t][idx] ?? null;
+    const macdH   = macdIdx[t][idx] ?? null;
+    const macdP   = idx > 0 ? (macdIdx[t][idx - 1] ?? null) : null;
+    if (sigSrc === 'rsi')      return btSignalFromRSI(rsiVal, rsiAF, rsiA, rsiV, rsiVF);
+    if (sigSrc === 'macd')     return btSignalFromMACD(macdH, macdP);
+    return btCombineSignals(
+      btSignalFromRSI(rsiVal, rsiAF, rsiA, rsiV, rsiVF),
+      btSignalFromMACD(macdH, macdP)
+    );
+  }
+
+  function priceAt(t, d) {
+    const rows = priceMap[t];
+    const idx = btBsearch(rows, d);
+    return idx >= 0 ? parseFloat(rows[idx].Cloture) : null;
+  }
+
+  // ── Simulation ───────────────────────────────────────────────────────
+  const budgetPerTicker = capital / tickers.length;
+  const cashReserve     = capital * cashResPct;
+  let cash = capital;
+  const positions = {};
+  tickers.forEach(t => { positions[t] = 0; });
+
+  const algoValues = [];
+  const bhPositions = {};
+  let bhDone = false;
+  const trades = [];
+  let nbTrades = 0;
+
+  rebalDates.forEach(d => {
+    // Initialiser Buy & Hold au premier rebalancement
+    if (!bhDone) {
+      tickers.forEach(t => {
+        const p = priceAt(t, d);
+        bhPositions[t] = p ? Math.floor(budgetPerTicker / p) : 0;
+      });
+      bhDone = true;
+    }
+
+    tickers.forEach(t => {
+      const sig   = getSignal(t, d);
+      const price = priceAt(t, d);
+      if (!price) return;
+
+      const availCash    = cash - cashReserve;
+      const maxInvest    = capital * maxPosPct;
+      const currentValue = positions[t] * price;
+
+      if (sig === 'ACHAT FORT' || sig === 'ACHAT') {
+        const pct         = sig === 'ACHAT FORT' ? pctAF : pctA;
+        const wantInvest  = Math.min(budgetPerTicker * pct, Math.max(0, maxInvest - currentValue), availCash);
+        if (wantInvest >= price) {
+          const nb   = Math.ceil(wantInvest / price);
+          const cost = nb * price * (1 + feesRate);
+          if (cost <= availCash) {
+            positions[t] += nb;
+            cash -= cost;
+            nbTrades++;
+            if (trades.length < 200) trades.push({ d, t, sig, nb, price, dir: 'A' });
+          }
         }
+      } else if (sig === 'VENTE' || sig === 'VENTE FORTE') {
+        const pct    = sig === 'VENTE FORTE' ? pctVF : pctV;
+        const nb     = Math.min(Math.ceil(positions[t] * pct), positions[t]);
+        if (nb > 0) {
+          cash += nb * price * (1 - feesRate);
+          positions[t] -= nb;
+          nbTrades++;
+          if (trades.length < 200) trades.push({ d, t, sig, nb, price, dir: 'V' });
+        }
+      }
     });
+
+    let val = cash;
+    tickers.forEach(t => { const p = priceAt(t, d); if (p) val += positions[t] * p; });
+    algoValues.push({ date: d, value: val });
+  });
+
+  // ── Buy & Hold (répartition équipondérée figée à J0) ────────────────
+  const bhValues = rebalDates.map(d => {
+    let v = 0;
+    tickers.forEach(t => { const p = priceAt(t, d); if (p) v += (bhPositions[t] || 0) * p; });
+    return { date: d, value: v };
+  });
+  const bhInitial = bhValues[0]?.value || capital;
+
+  // ── BRVM Composite mis à l'échelle ──────────────────────────────────
+  const brvmcRef = brvmcAtOrBefore(rebalDates[0]);
+  const brvmcValues = brvmcRef ? rebalDates.map(d => {
+    const p = brvmcAtOrBefore(d);
+    return { date: d, value: p ? capital * (p.close / brvmcRef.close) : null };
+  }) : null;
+
+  // ── Métriques ────────────────────────────────────────────────────────
+  const algoInitial = algoValues[0]?.value || capital;
+  const algoFinal   = algoValues[algoValues.length - 1]?.value || capital;
+  const bhFinal     = bhValues[bhValues.length - 1]?.value || bhInitial;
+  const brvmcFinal  = brvmcValues ? brvmcValues[brvmcValues.length - 1]?.value : null;
+
+  const algoRet  = (algoFinal - algoInitial) / algoInitial * 100;
+  const bhRet    = (bhFinal - bhInitial) / bhInitial * 100;
+  const brvmcRet = brvmcFinal ? (brvmcFinal - capital) / capital * 100 : null;
+
+  const nYears  = Math.max(0.01, (new Date(rebalDates[rebalDates.length - 1]) - new Date(rebalDates[0])) / (365.25 * 86400000));
+  const algoAnn = (Math.pow(algoFinal / algoInitial, 1 / nYears) - 1) * 100;
+  const bhAnn   = (Math.pow(bhFinal   / bhInitial,   1 / nYears) - 1) * 100;
+
+  // Sharpe (rendements périodiques)
+  const rets = [];
+  for (let i = 1; i < algoValues.length; i++) {
+    rets.push((algoValues[i].value - algoValues[i-1].value) / algoValues[i-1].value);
+  }
+  const meanR = rets.reduce((s, v) => s + v, 0) / (rets.length || 1);
+  const stdR  = Math.sqrt(rets.reduce((s, v) => s + (v - meanR) ** 2, 0) / (rets.length || 1));
+  const periodsPerYear = 12 / rebalMonths;
+  const sharpe = stdR > 0 ? (meanR * periodsPerYear) / (stdR * Math.sqrt(periodsPerYear)) : 0;
+
+  // Max Drawdown
+  let peak = algoInitial, maxDD = 0;
+  algoValues.forEach(({ value }) => {
+    if (value > peak) peak = value;
+    maxDD = Math.max(maxDD, (peak - value) / peak);
+  });
+
+  const fmt = (v, cls = '') => `<span class="${v >= 0 ? 'up' : 'down'}">${v >= 0 ? '+' : ''}${v.toFixed(2)}%</span>`;
+
+  metricsEl.innerHTML = `
+    <div class="metric"><div class="lbl">Stratégie — Perf. totale</div><div class="val ${algoRet>=0?'up':'down'}">${algoRet>=0?'+':''}${algoRet.toFixed(1)}%</div><div class="sub">${fmtDate(rebalDates[0])} → ${fmtDate(rebalDates[rebalDates.length-1])}</div></div>
+    <div class="metric"><div class="lbl">Rendement annualisé</div><div class="val ${algoAnn>=0?'up':'down'}">${algoAnn>=0?'+':''}${algoAnn.toFixed(2)}%</div><div class="sub">sur ${nYears.toFixed(1)} ans</div></div>
+    <div class="metric"><div class="lbl">Buy &amp; Hold total</div><div class="val ${bhRet>=0?'up':'down'}">${bhRet>=0?'+':''}${bhRet.toFixed(1)}%</div><div class="sub">Ann. ${bhAnn>=0?'+':''}${bhAnn.toFixed(2)}%</div></div>
+    ${brvmcRet!==null?`<div class="metric"><div class="lbl">BRVM Composite</div><div class="val ${brvmcRet>=0?'up':'down'}">${brvmcRet>=0?'+':''}${brvmcRet.toFixed(1)}%</div><div class="sub">α Strat. ${(algoRet-brvmcRet)>=0?'+':''}${(algoRet-brvmcRet).toFixed(1)}%</div></div>`:''}
+    <div class="metric"><div class="lbl">Alpha vs B&amp;H</div><div class="val ${(algoRet-bhRet)>=0?'up':'down'}">${(algoRet-bhRet)>=0?'+':''}${(algoRet-bhRet).toFixed(1)}%</div></div>
+    <div class="metric"><div class="lbl">Sharpe Ratio</div><div class="val ${sharpe>=1?'up':sharpe>=0?'':'down'}">${sharpe.toFixed(2)}</div><div class="sub">&gt;1 = bon, &gt;2 = excellent</div></div>
+    <div class="metric"><div class="lbl">Max Drawdown</div><div class="val down">−${(maxDD*100).toFixed(1)}%</div></div>
+    <div class="metric"><div class="lbl">Nb transactions</div><div class="val">${nbTrades}</div><div class="sub">${(nbTrades/nYears).toFixed(0)}/an</div></div>
+    <div class="metric"><div class="lbl">Valeur finale</div><div class="val" style="font-size:14px">${fmtFCFA(algoFinal)} F</div></div>
+  `;
+
+  // ── Graphique Base 100 ────────────────────────────────────────────────
+  const toBase100_algo = v => v / algoInitial * 100;
+  const toBase100_bh   = v => v / bhInitial   * 100;
+  const c = chartColors();
+  if (chartBacktest) chartBacktest.destroy();
+  const ctx = document.getElementById('chart-backtest').getContext('2d');
+  const datasets = [
+    { label: 'Stratégie signaux', data: algoValues.map(x => toBase100_algo(x.value)), borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.07)', borderWidth: 2, pointRadius: 0, fill: true, tension: 0.2 },
+    { label: 'Buy & Hold', data: bhValues.map(x => toBase100_bh(x.value)), borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [5, 3], pointRadius: 0, fill: false, tension: 0.2 },
+  ];
+  if (brvmcValues) datasets.push({ label: 'BRVM Composite', data: brvmcValues.map(x => x.value ? toBase100_algo(x.value) : null), borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 });
+  datasets.push({ label: 'Base 100', data: rebalDates.map(() => 100), borderColor: '#888', borderWidth: 1, borderDash: [3, 3], pointRadius: 0, fill: false });
+
+  chartBacktest = new Chart(ctx, {
+    type: 'line',
+    data: { labels: rebalDates, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { color: c.text, font: { size: 11 }, boxWidth: 14 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y !== null ? ctx.parsed.y.toFixed(1) : '–'}` } }
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 10, color: c.text, font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: c.text, font: { size: 11 } }, grid: { color: c.grid } }
+      }
+    }
+  });
+
+  // ── Derniers trades ───────────────────────────────────────────────────
+  const tradesEl = document.getElementById('bt-trades-section');
+  const display  = trades.slice(-50).reverse();
+  if (display.length) {
+    tradesEl.innerHTML = `
+      <div class="info-card">
+        <h3>Derniers ordres simulés — ${display.length} affichés sur ${nbTrades} total</h3>
+        <div style="overflow-x:auto">
+          <table class="fond-table" style="font-size:12px">
+            <thead><tr>
+              <th>Date</th><th>Actif</th><th>Signal</th><th>Sens</th>
+              <th style="text-align:right">Nb actions</th>
+              <th style="text-align:right">Prix unit.</th>
+              <th style="text-align:right">Montant</th>
+            </tr></thead>
+            <tbody>
+              ${display.map(tr => `<tr>
+                <td style="font-family:'Courier New',monospace;font-size:11px">${tr.d}</td>
+                <td style="font-weight:700">${tr.t.replace('_',' ').toUpperCase()}</td>
+                <td><span class="sig-badge sig-${tr.sig.toLowerCase().replace(' ','-')}">${tr.sig}</span></td>
+                <td style="font-weight:700;color:${tr.dir==='A'?'var(--up)':'var(--down)'}">${tr.dir==='A'?'ACHAT':'VENTE'}</td>
+                <td style="text-align:right">${tr.nb}</td>
+                <td style="text-align:right">${fmtFCFA(tr.price)} F</td>
+                <td style="text-align:right;font-weight:700">${fmtFCFA(tr.nb*tr.price)} F</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  }
 }
 
 function showTab(name, btn) {
@@ -1189,10 +1640,10 @@ function showTab(name, btn) {
   btn.classList.add('active');
   if (name === 'societe') loadSociete();
   if (name === 'fondamentaux') loadFondamentaux();
+  if (name === 'analyse') loadAnalyse('portfolio');
   if (name === 'signals') loadSignals();
   if (name === 'sighist') loadSigHist();
   if (name === 'algo') loadAlgo();
-  if (name === 'backtest') loadBacktest();
 }
 
 function setPeriod(btn, p) {
@@ -1228,6 +1679,16 @@ async function loadAction() {
     const avgVol = vols.reduce((a, b) => a + b, 0) / vols.length;
     const highs = filtered.map(r => parseFloat(r.Plus_Haut) || 0);
     const lows = filtered.filter(r => parseFloat(r.Plus_Bas) > 0).map(r => parseFloat(r.Plus_Bas));
+
+    // Indicateurs techniques sur l'historique complet (max 250 pts)
+    const allRows = filterPeriod.length ? rows : rows; // rows = historique complet
+    const allCloses = rows.map(r => parseFloat(r.Cloture)).filter(v => !isNaN(v) && v > 0);
+    const rsiObj  = calcRSI(allCloses);
+    const macdObj = calcMACD(allCloses);
+    const rsiVal  = rsiObj.current;
+    const rsiSc   = scoreRSI(rsiVal);
+    const macdSc  = scoreMACD(macdObj);
+
     el.innerHTML = `
       <div class="metric"><div class="lbl">Clôture</div><div class="val">${cl.toLocaleString('fr-FR')} F</div><div class="sub">${last.Date}</div></div>
       <div class="metric"><div class="lbl">Variation (J)</div><div class="val ${vr >= 0 ? 'up' : 'down'}">${vr >= 0 ? '+' : ''}${vr.toFixed(2)}%</div></div>
@@ -1235,6 +1696,8 @@ async function loadAction() {
       <div class="metric"><div class="lbl">Plus haut</div><div class="val">${Math.max(...highs).toLocaleString('fr-FR')}</div></div>
       <div class="metric"><div class="lbl">Plus bas</div><div class="val">${Math.min(...lows).toLocaleString('fr-FR')}</div></div>
       <div class="metric"><div class="lbl">Vol. moy</div><div class="val" style="font-size:15px">${(avgVol / 1e6).toFixed(1)}M F</div></div>
+      <div class="metric"><div class="lbl">RSI(14)</div><div class="val ${rsiSc.cls}" style="font-size:15px">${rsiVal !== null ? rsiVal.toFixed(1) : '–'}</div><div class="sub ${rsiSc.cls}">${rsiSc.label.split('—')[1]?.trim() || ''}</div></div>
+      <div class="metric"><div class="lbl">MACD</div><div class="val ${macdSc.cls}" style="font-size:15px">${macdObj.current !== null ? (macdObj.bullish ? '▲' : '▼') : '–'}</div><div class="sub ${macdSc.cls}">${macdSc.label.split('—')[1]?.trim() || ''}</div></div>
     `;
     drawActionChart(filtered, ticker);
   } catch (e) { el.innerHTML = `<div class="err-box">${e.message}</div>`; }
@@ -1557,13 +2020,24 @@ async function loadFondamentaux() {
   const el = document.getElementById('fond-content');
   el.innerHTML = '<div class="loading"><span class="spinner"></span>Chargement...</div>';
   try {
-    const text = await get(`${BASE}/fondamentaux/${ticker}_fondamentaux.json`);
-    const d = JSON.parse(text);
+    const [fondTxt, societeTxt, priceTxt] = await Promise.all([
+      get(`${BASE}/fondamentaux/${ticker}_fondamentaux.json`),
+      get(`${BASE}/societes/${ticker}_societe.json`).catch(() => '{}'),
+      get(`${BASE}/actions/${ticker}_historique.csv`).catch(() => '')
+    ]);
+    const d = JSON.parse(fondTxt);
+    const soc = JSON.parse(societeTxt);
+    const priceRows = priceTxt ? parseCSV(priceTxt) : [];
     const annees = d.annees || [];
     const metrics = d.metrics || {};
+    const hasTech = priceRows.length >= 35;
+
+    const techHtml = hasTech ? renderTechAnalysis(priceRows, ticker, soc.PER || '') : '';
+
     el.innerHTML = `
+      ${techHtml}
       <div class="info-card">
-        <h3>Données fondamentales – ${ticker}</h3>
+        <h3>Données fondamentales — ${ticker.replace('_', ' ').toUpperCase()}</h3>
         <div style="overflow-x:auto">
           <table class="fond-table">
             <thead><tr><th>Indicateur</th>${annees.map(a => `<th style="text-align:right">${a}</th>`).join('')}</tr></thead>
@@ -1586,8 +2060,24 @@ async function loadFondamentaux() {
         </div>
         <div class="chart-wrap" style="height:200px"><canvas id="chart-fond" role="img" aria-label="CA et résultat net par année"></canvas></div>
       </div>
+      ${hasTech ? `
+      <div class="info-card" style="margin-top:1.25rem">
+        <h3>Prix · MA20 · MA50 — 180 dernières séances</h3>
+        <div class="chart-wrap" style="height:300px"><canvas id="chart-tech-price"></canvas></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem">
+        <div class="info-card">
+          <h3>RSI(14) — Survente &lt; 30 · Surachat &gt; 70</h3>
+          <div class="chart-wrap-sm"><canvas id="chart-tech-rsi"></canvas></div>
+        </div>
+        <div class="info-card">
+          <h3>MACD (12/26/9) — Histogramme · Ligne · Signal</h3>
+          <div class="chart-wrap-sm"><canvas id="chart-tech-macd"></canvas></div>
+        </div>
+      </div>` : ''}
     `;
     drawFondChart(d);
+    if (hasTech) drawTechCharts(priceRows);
   } catch (e) { el.innerHTML = `<div class="err-box">${e.message}</div>`; }
 }
 
@@ -1616,6 +2106,384 @@ function drawFondChart(d) {
       }
     }
   });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANALYSE TECHNIQUE & SCORING COMPOSITE
+// ═══════════════════════════════════════════════════════════════════════════
+
+let chartTechPrice = null, chartTechRSI = null, chartTechMACD = null;
+
+// ── Calculs d'indicateurs ───────────────────────────────────────────────────
+
+function calcEMA(vals, period) {
+  if (!vals || !vals.length) return [];
+  const k = 2 / (period + 1);
+  const ema = [vals[0]];
+  for (let i = 1; i < vals.length; i++) ema.push(vals[i] * k + ema[i - 1] * (1 - k));
+  return ema;
+}
+
+function calcRSI(closes, period = 14) {
+  if (closes.length < period + 1) return { values: [], current: null };
+  let ag = 0, al = 0;
+  for (let i = 1; i <= period; i++) {
+    const d = closes[i] - closes[i - 1];
+    if (d > 0) ag += d; else al -= d;
+  }
+  ag /= period; al /= period;
+  const vals = new Array(period).fill(null);
+  vals.push(100 - 100 / (1 + ag / Math.max(al, 1e-9)));
+  for (let i = period + 1; i < closes.length; i++) {
+    const d = closes[i] - closes[i - 1];
+    ag = (ag * (period - 1) + Math.max(d, 0)) / period;
+    al = (al * (period - 1) + Math.max(-d, 0)) / period;
+    vals.push(100 - 100 / (1 + ag / Math.max(al, 1e-9)));
+  }
+  return { values: vals, current: vals[vals.length - 1] };
+}
+
+function calcMACD(closes, fast = 12, slow = 26, sigPer = 9) {
+  if (closes.length < slow + sigPer) return { macdLine: [], signalLine: [], histogram: [], bullish: null, rising: null, current: null };
+  const emaFast = calcEMA(closes, fast);
+  const emaSlow = calcEMA(closes, slow);
+  const macdLine = emaFast.map((v, i) => v - emaSlow[i]);
+  const signalLine = calcEMA(macdLine, sigPer);
+  const histogram = macdLine.map((v, i) => v - signalLine[i]);
+  const cur = histogram[histogram.length - 1];
+  const prev = histogram[histogram.length - 2] ?? 0;
+  return { macdLine, signalLine, histogram, current: cur, bullish: cur > 0, rising: cur > prev };
+}
+
+function calcMA(closes, period) {
+  return closes.map((_, i) => {
+    if (i < period - 1) return null;
+    let s = 0;
+    for (let j = i - period + 1; j <= i; j++) s += closes[j];
+    return s / period;
+  });
+}
+
+// ── Fonctions de scoring ─────────────────────────────────────────────────────
+
+function scoreRSI(rsi) {
+  if (rsi === null || isNaN(rsi)) return { score: 0, label: 'RSI N/A', cls: '' };
+  if (rsi < 30) return { score: 2, label: `RSI ${rsi.toFixed(0)} — Survendu`, cls: 'up' };
+  if (rsi < 45) return { score: 1, label: `RSI ${rsi.toFixed(0)} — Zone achat`, cls: 'up' };
+  if (rsi < 55) return { score: 0, label: `RSI ${rsi.toFixed(0)} — Neutre`, cls: '' };
+  if (rsi < 70) return { score: -1, label: `RSI ${rsi.toFixed(0)} — Zone vente`, cls: 'down' };
+  return { score: -2, label: `RSI ${rsi.toFixed(0)} — Suracheté`, cls: 'down' };
+}
+
+function scoreMACD(macd) {
+  if (!macd || macd.bullish === null) return { score: 0, label: 'MACD N/A', cls: '' };
+  if (macd.bullish && macd.rising)   return { score: 2, label: 'MACD — Haussier ↑', cls: 'up' };
+  if (macd.bullish)                  return { score: 1, label: 'MACD — Positif', cls: 'up' };
+  if (!macd.bullish && macd.rising)  return { score: 0, label: 'MACD — Remontée', cls: '' };
+  return { score: -2, label: 'MACD — Baissier ↓', cls: 'down' };
+}
+
+function scoreTrend(closes, ma50vals) {
+  if (!closes.length || !ma50vals || !ma50vals.length) return { score: 0, label: 'Tendance N/A', cls: '' };
+  const validMA = ma50vals.filter(v => v !== null);
+  if (validMA.length < 2) return { score: 0, label: 'MA50 N/A', cls: '' };
+  const last = closes[closes.length - 1];
+  const ma = validMA[validMA.length - 1];
+  const maPrev = validMA[validMA.length - 2];
+  const pct = (last - ma) / ma * 100;
+  const maTrend = ma > maPrev ? 1 : -1;
+  if (pct > 3 && maTrend > 0)       return { score: 2, label: `Tendance +${pct.toFixed(1)}% ↗`, cls: 'up' };
+  if (pct > 0)                       return { score: 1, label: `Tendance +${pct.toFixed(1)}%`, cls: 'up' };
+  if (Math.abs(pct) <= 3)            return { score: 0, label: `Tendance ${pct.toFixed(1)}%`, cls: '' };
+  if (maTrend < 0)                   return { score: -2, label: `Tendance ${pct.toFixed(1)}% ↘`, cls: 'down' };
+  return { score: -1, label: `Tendance ${pct.toFixed(1)}%`, cls: 'down' };
+}
+
+function scoreLiq(volumes) {
+  if (!volumes.length) return { score: 0, label: 'Vol. N/A', cls: '' };
+  const avg = volumes.reduce((s, v) => s + v, 0) / volumes.length;
+  const m = avg / 1e6;
+  if (avg >= 5e6) return { score: 1, label: `Vol. ${m.toFixed(1)}M F — Liquide`, cls: 'up' };
+  if (avg >= 1e6) return { score: 0, label: `Vol. ${m.toFixed(1)}M F — Moyen`, cls: '' };
+  return { score: -1, label: `Vol. ${(avg / 1e3).toFixed(0)}K F — Illiquide`, cls: 'down' };
+}
+
+function scoreProphetTicker(ticker) {
+  const sig = SIGNALS_DATA[ticker];
+  if (!sig) return { score: 0, label: 'Prophet N/A', cls: '' };
+  const map = { 'ACHAT FORT': 3, 'ACHAT': 2, 'NEUTRE': 0, 'VENTE': -2, 'VENTE FORTE': -3 };
+  const s = map[sig.signal] ?? 0;
+  const pct = sig.last_price > 0 ? ((sig.target_30d - sig.last_price) / sig.last_price * 100) : 0;
+  const sign = pct >= 0 ? '+' : '';
+  return { score: s, label: `Prophet — ${sig.signal} (${sign}${pct.toFixed(1)}%)`, cls: s > 0 ? 'up' : (s < 0 ? 'down' : '') };
+}
+
+function scorePER(perRaw) {
+  const per = parseFloat(String(perRaw || '').replace(/[^\d.,]/g, '').replace(',', '.'));
+  if (!isFinite(per) || per <= 0) return { score: 0, label: 'PER N/A', cls: '' };
+  if (per < 8)  return { score: 2, label: `PER ${per.toFixed(1)}x — Décoté`, cls: 'up' };
+  if (per < 15) return { score: 1, label: `PER ${per.toFixed(1)}x — Raisonnable`, cls: 'up' };
+  if (per < 25) return { score: 0, label: `PER ${per.toFixed(1)}x — Correct`, cls: '' };
+  return { score: -1, label: `PER ${per.toFixed(1)}x — Cher`, cls: 'down' };
+}
+
+function verdictFromScore(total) {
+  if (total >= 8)  return { lbl: 'ACHETER IMPÉRATIVEMENT', cls: 'verdict-achat-fort' };
+  if (total >= 5)  return { lbl: 'ACHETER', cls: 'verdict-achat' };
+  if (total >= 2)  return { lbl: 'SURVEILLER', cls: 'verdict-surveiller' };
+  if (total >= -1) return { lbl: 'CONSERVER', cls: 'verdict-conserver' };
+  if (total >= -4) return { lbl: 'RÉDUIRE', cls: 'verdict-reduire' };
+  return { lbl: 'VENDRE', cls: 'verdict-vendre' };
+}
+
+// ── Calcul groupé des scores ─────────────────────────────────────────────────
+
+function buildScores(priceRows, ticker, perRaw) {
+  const validData = priceRows.slice(-250).filter(r => {
+    const c = parseFloat(r.Cloture); return !isNaN(c) && c > 0;
+  });
+  const closes = validData.map(r => parseFloat(r.Cloture));
+  const volumes = validData.map(r => parseFloat(r.Volume_FCFA) || parseFloat(r.Volume) || 0);
+  const ma50vals = calcMA(closes, 50);
+  const rsiObj = calcRSI(closes);
+  const macdObj = calcMACD(closes);
+  const sRSI     = scoreRSI(rsiObj.current);
+  const sMACD    = scoreMACD(macdObj);
+  const sTrend   = scoreTrend(closes, ma50vals);
+  const sLiq     = scoreLiq(volumes.slice(-60));
+  const sProphet = scoreProphetTicker(ticker);
+  const sPER     = scorePER(perRaw);
+  const total = sRSI.score + sMACD.score + sTrend.score + sLiq.score + sProphet.score + sPER.score;
+  const verdict = verdictFromScore(total);
+  return { sRSI, sMACD, sTrend, sLiq, sProphet, sPER, total, verdict, closes, volumes, ma50vals, rsiObj, macdObj };
+}
+
+// ── Rendu du bloc verdict (HTML string) ─────────────────────────────────────
+
+function renderTechAnalysis(priceRows, ticker, perRaw) {
+  const sc = buildScores(priceRows, ticker, perRaw);
+  const pct = ((sc.total + 11) / 22 * 100).toFixed(1);
+  const barColor = sc.total >= 5 ? 'var(--up)' : sc.total >= 2 ? 'var(--blue)' : sc.total >= -1 ? 'var(--text-sec)' : 'var(--down)';
+  const chips = [sc.sRSI, sc.sMACD, sc.sTrend, sc.sLiq, sc.sProphet, sc.sPER];
+  return `
+    <div class="verdict-card">
+      <div class="verdict-main">
+        <span class="verdict-badge ${sc.verdict.cls}">${sc.verdict.lbl}</span>
+        <span class="verdict-score">Score composite : <strong>${sc.total >= 0 ? '+' : ''}${sc.total}</strong> <span style="opacity:.5">/ 12</span></span>
+      </div>
+      <div class="score-bar-track">
+        <div class="score-bar-fill" style="width:${pct}%;background:${barColor}"></div>
+        <div class="score-bar-zero"></div>
+      </div>
+      <div class="tech-indicators">
+        ${chips.map(s => `
+          <div class="tech-chip ${s.cls}">
+            <span class="chip-score">${s.score >= 0 ? '+' : ''}${s.score}</span>
+            <span class="chip-label" style="color:var(--text-sec)">${s.label}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── Graphiques techniques (Prix+MA, RSI, MACD) ───────────────────────────────
+
+function drawTechCharts(priceRows) {
+  const validData = priceRows.slice(-250).filter(r => {
+    const c = parseFloat(r.Cloture); return !isNaN(c) && c > 0;
+  });
+  const recent = validData.slice(-180);
+  const dates  = recent.map(r => r.Date);
+  const allC   = validData.map(r => parseFloat(r.Cloture));
+  const closes = recent.map(r => parseFloat(r.Cloture));
+
+  const ma20all = calcMA(allC, 20);
+  const ma50all = calcMA(allC, 50);
+  const rsiAll  = calcRSI(allC);
+  const macdAll = calcMACD(allC);
+
+  const ma20   = ma20all.slice(-180);
+  const ma50   = ma50all.slice(-180);
+  const rsiV   = rsiAll.values.slice(-180);
+  const histo  = macdAll.histogram.slice(-180);
+  const mLine  = macdAll.macdLine.slice(-180);
+  const sLine  = macdAll.signalLine.slice(-180);
+
+  const c = chartColors();
+
+  // Prix + MA
+  const pCtx = document.getElementById('chart-tech-price');
+  if (pCtx) {
+    if (chartTechPrice) chartTechPrice.destroy();
+    chartTechPrice = new Chart(pCtx, {
+      type: 'line',
+      data: { labels: dates, datasets: [
+        { label: 'Prix',  data: closes, borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.06)', borderWidth: 1.5, pointRadius: 0, fill: true,  tension: 0.2 },
+        { label: 'MA20',  data: ma20,   borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [5,3], pointRadius: 0, fill: false, tension: 0.2 },
+        { label: 'MA50',  data: ma50,   borderColor: '#1D9E75', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: true, position: 'top', labels: { color: c.text, font: { size: 10 }, boxWidth: 12 } } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 8, color: c.text, font: { size: 10 } }, grid: { display: false } },
+          y: { ticks: { color: c.text, font: { size: 10 }, callback: v => v.toLocaleString('fr-FR') }, grid: { color: c.grid } }
+        }
+      }
+    });
+  }
+
+  // RSI
+  const rCtx = document.getElementById('chart-tech-rsi');
+  if (rCtx) {
+    if (chartTechRSI) chartTechRSI.destroy();
+    chartTechRSI = new Chart(rCtx, {
+      type: 'line',
+      data: { labels: dates, datasets: [
+        { label: 'RSI(14)', data: rsiV, borderColor: '#8B5CF6', borderWidth: 1.5, pointRadius: 0, fill: false, tension: 0.2 },
+        { label: '30',      data: dates.map(() => 30), borderColor: 'rgba(29,158,117,0.5)', borderWidth: 1, borderDash: [4,4], pointRadius: 0, fill: false },
+        { label: '70',      data: dates.map(() => 70), borderColor: 'rgba(226,75,74,0.5)',  borderWidth: 1, borderDash: [4,4], pointRadius: 0, fill: false },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` RSI: ${ctx.parsed.y !== null ? ctx.parsed.y.toFixed(1) : '–'}` } } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 6, color: c.text, font: { size: 10 } }, grid: { display: false } },
+          y: { min: 0, max: 100, ticks: { color: c.text, font: { size: 10 }, stepSize: 25 }, grid: { color: c.grid } }
+        }
+      }
+    });
+  }
+
+  // MACD
+  const mCtx = document.getElementById('chart-tech-macd');
+  if (mCtx) {
+    if (chartTechMACD) chartTechMACD.destroy();
+    chartTechMACD = new Chart(mCtx, {
+      type: 'bar',
+      data: { labels: dates, datasets: [
+        { label: 'Histo', data: histo, backgroundColor: histo.map(v => v >= 0 ? 'rgba(29,158,117,0.7)' : 'rgba(226,75,74,0.7)'), borderWidth: 0, order: 2 },
+        { label: 'MACD',  data: mLine, borderColor: '#185FA5', borderWidth: 1.5, pointRadius: 0, type: 'line', fill: false, tension: 0.2, order: 1 },
+        { label: 'Signal',data: sLine, borderColor: '#F59E0B', borderWidth: 1.5, borderDash: [4,3], pointRadius: 0, type: 'line', fill: false, tension: 0.2, order: 0 },
+      ]},
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { maxTicksLimit: 6, color: c.text, font: { size: 10 } }, grid: { display: false } },
+          y: { ticks: { color: c.text, font: { size: 10 } }, grid: { color: c.grid } }
+        }
+      }
+    });
+  }
+}
+
+// ── Screening tab ──────────────────────────────────────────────────────────
+
+function goToFond(ticker) {
+  const btn = Array.from(document.querySelectorAll('nav.tabs button')).find(b => b.textContent.includes('Fondamentaux'));
+  if (btn) btn.click();
+  const sel = document.getElementById('sel-fond');
+  if (sel) { sel.value = ticker; loadFondamentaux(); }
+}
+
+async function loadAnalyse(mode = 'portfolio') {
+  const el = document.getElementById('analyse-content');
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>Calcul des scores en cours…</div>';
+
+  let tickers;
+  if (mode === 'all') {
+    tickers = TICKERS;
+  } else {
+    const alloc = ALGO_DATA.allocation || {};
+    tickers = Object.keys(alloc).length
+      ? Object.keys(alloc).sort((a, b) => (alloc[b] || 0) - (alloc[a] || 0))
+      : TICKERS.slice(0, 15);
+  }
+
+  // Charger prix complets (avec volume) + societe (pour PER) en parallèle
+  const [priceMap, perMap] = await Promise.all([
+    (async () => {
+      const m = {};
+      await Promise.all(tickers.map(async t => {
+        try {
+          const txt = await get(`${BASE}/actions/${t}_historique.csv`);
+          m[t] = parseCSV(txt);
+        } catch { m[t] = []; }
+      }));
+      return m;
+    })(),
+    (async () => {
+      const m = {};
+      await Promise.all(tickers.map(async t => {
+        try {
+          const txt = await get(`${BASE}/societes/${t}_societe.json`);
+          m[t] = JSON.parse(txt).PER || '';
+        } catch { m[t] = ''; }
+      }));
+      return m;
+    })()
+  ]);
+
+  const results = tickers.map(t => {
+    const rows = priceMap[t] || [];
+    const lastPriceRow = rows[rows.length - 1];
+    const lastPrice = lastPriceRow ? parseFloat(lastPriceRow.Cloture) : null;
+    if (rows.length < 30) {
+      return {
+        ticker: t, total: -99, verdict: { lbl: 'DONNÉES INSUF.', cls: 'verdict-conserver' },
+        sRSI: { score: 0, label: '–' }, sMACD: { score: 0, label: '–' },
+        sTrend: { score: 0, label: '–' }, sLiq: { score: 0, label: '–' },
+        sProphet: { score: 0, label: '–' }, sPER: { score: 0, label: '–' }, lastPrice
+      };
+    }
+    const sc = buildScores(rows, t, perMap[t]);
+    return { ticker: t, ...sc, lastPrice };
+  }).sort((a, b) => b.total - a.total);
+
+  const scoreCell = sc => {
+    const col = sc.score > 0 ? 'var(--up)' : sc.score < 0 ? 'var(--down)' : 'var(--text-sec)';
+    const short = sc.label.split('—')[1]?.trim() || sc.label;
+    return `<span style="color:${col};font-weight:700;font-family:'Courier New',monospace;font-size:11px">${sc.score >= 0 ? '+' : ''}${sc.score}</span>&nbsp;<span style="font-size:11px;color:var(--text-sec)">${short}</span>`;
+  };
+
+  const rows = results.map(r => {
+    const scoreCol = r.total >= 5 ? 'var(--up)' : r.total >= 2 ? 'var(--blue)' : r.total >= -1 ? 'var(--text-sec)' : 'var(--down)';
+    return `<tr onclick="goToFond('${r.ticker}')">
+      <td style="font-weight:700">${r.ticker.replace('_', ' ').toUpperCase()}</td>
+      <td style="text-align:right;font-family:'Courier New',monospace">${r.lastPrice ? fmtFCFA(r.lastPrice) : '–'}</td>
+      <td>${scoreCell(r.sRSI)}</td>
+      <td>${scoreCell(r.sMACD)}</td>
+      <td>${scoreCell(r.sTrend)}</td>
+      <td>${scoreCell(r.sLiq)}</td>
+      <td>${scoreCell(r.sProphet)}</td>
+      <td>${scoreCell(r.sPER)}</td>
+      <td style="text-align:center"><span style="font-weight:800;color:${scoreCol};font-family:'Courier New',monospace;font-size:15px">${r.total >= 0 ? '+' : ''}${r.total === -99 ? '–' : r.total}</span></td>
+      <td><span class="verdict-badge ${r.verdict.cls}" style="font-size:11px;padding:3px 8px">${r.verdict.lbl}</span></td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="overflow-x:auto">
+      <table class="screen-table">
+        <thead><tr>
+          <th>Actif</th>
+          <th style="text-align:right">Prix</th>
+          <th>RSI(14)</th>
+          <th>MACD</th>
+          <th>Tendance MA50</th>
+          <th>Liquidité</th>
+          <th>Prophet</th>
+          <th>PER</th>
+          <th style="text-align:center">Score</th>
+          <th>Verdict</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <p class="conseil-warn" style="margin-top:10px">
+      Score composite : RSI (max ±2) · MACD (max ±2) · Tendance MA50 (max ±2) · Liquidité (max ±1) · Prophet (max ±3) · PER (max ±2) → plage −12 à +12.
+      <strong>Cliquez sur un actif</strong> pour ouvrir son analyse détaillée dans l'onglet Fondamentaux.
+    </p>`;
 }
 
 async function init() {
