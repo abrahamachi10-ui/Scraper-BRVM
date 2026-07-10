@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T17:49:55.136699+00:00",
+  "generated_at": "2026-07-10T17:46:12.500305+00:00",
   "tickers": {
     "ABJC_ci": [
       {
@@ -368,6 +368,15 @@
         "last_price": 3150.0,
         "target_30d": 3361.8,
         "change_pct": 6.72,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 3150.0,
+        "target_30d": 3335.6,
+        "change_pct": 5.89,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -741,6 +750,15 @@
         "change_pct": 8.79,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 8750.0,
+        "target_30d": 9541.59,
+        "change_pct": 9.05,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "BOABF_bf": [
@@ -1110,6 +1128,15 @@
         "last_price": 5970.0,
         "target_30d": 6091.6,
         "change_pct": 2.04,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 6050.0,
+        "target_30d": 6119.81,
+        "change_pct": 1.15,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -1483,6 +1510,15 @@
         "change_pct": 2.72,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 9500.0,
+        "target_30d": 9706.71,
+        "change_pct": 2.18,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "BOAM_ml": [
@@ -1852,6 +1888,15 @@
         "last_price": 5425.0,
         "target_30d": 5279.09,
         "change_pct": -2.69,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 5450.0,
+        "target_30d": 5289.23,
+        "change_pct": -2.95,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -2225,6 +2270,15 @@
         "change_pct": 10.22,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 7300.0,
+        "target_30d": 8077.23,
+        "change_pct": 10.65,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "ECOC_ci": [
@@ -2594,6 +2648,15 @@
         "last_price": 16700.0,
         "target_30d": 16811.79,
         "change_pct": 0.67,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 16795.0,
+        "target_30d": 16843.02,
+        "change_pct": 0.29,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -2967,6 +3030,15 @@
         "change_pct": 14.1,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 2000.0,
+        "target_30d": 2384.88,
+        "change_pct": 19.24,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "ORGT_tg": [
@@ -3336,6 +3408,15 @@
         "last_price": 2675.0,
         "target_30d": 3131.22,
         "change_pct": 17.05,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 2650.0,
+        "target_30d": 3130.19,
+        "change_pct": 18.12,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -3709,6 +3790,15 @@
         "change_pct": 9.06,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 4280.0,
+        "target_30d": 4784.57,
+        "change_pct": 11.79,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "SAFC_ci": [
@@ -4078,6 +4168,15 @@
         "last_price": 4125.0,
         "target_30d": 5251.25,
         "change_pct": 27.3,
+        "confidence": "Moyenne",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 4270.0,
+        "target_30d": 5210.84,
+        "change_pct": 22.03,
         "confidence": "Moyenne",
         "trend": "UP"
       }
@@ -4451,6 +4550,15 @@
         "change_pct": 4.18,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 2205.0,
+        "target_30d": 2315.47,
+        "change_pct": 5.01,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "SIVC_ci": [
@@ -4820,6 +4928,15 @@
         "last_price": 1920.0,
         "target_30d": 3271.48,
         "change_pct": 70.39,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 2060.0,
+        "target_30d": 3260.43,
+        "change_pct": 58.27,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -5193,6 +5310,15 @@
         "change_pct": 6.6,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 39910.0,
+        "target_30d": 42516.02,
+        "change_pct": 6.53,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "SNTS_sn": [
@@ -5562,6 +5688,15 @@
         "last_price": 31000.0,
         "target_30d": 30311.31,
         "change_pct": -2.22,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 30900.0,
+        "target_30d": 30483.5,
+        "change_pct": -1.35,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -5935,6 +6070,15 @@
         "change_pct": 28.54,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 3200.0,
+        "target_30d": 3903.66,
+        "change_pct": 21.99,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "TTLC_ci": [
@@ -6304,6 +6448,15 @@
         "last_price": 2920.0,
         "target_30d": 3012.78,
         "change_pct": 3.18,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 2800.0,
+        "target_30d": 3006.23,
+        "change_pct": 7.37,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -6677,6 +6830,15 @@
         "change_pct": 51.38,
         "confidence": "Moyenne",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 50500.0,
+        "target_30d": 80454.83,
+        "change_pct": 59.32,
+        "confidence": "Moyenne",
+        "trend": "UP"
       }
     ],
     "UNXC_ci": [
@@ -7048,6 +7210,15 @@
         "change_pct": 59.7,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 1340.0,
+        "target_30d": 1979.99,
+        "change_pct": 47.76,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "LNBB_bj": [
@@ -7383,6 +7554,15 @@
         "change_pct": -1.94,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 4415.0,
+        "target_30d": 4058.54,
+        "change_pct": -8.07,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "SEMC_ci": [
@@ -7619,6 +7799,15 @@
         "change_pct": 35.03,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 1455.0,
+        "target_30d": 1946.02,
+        "change_pct": 33.75,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "BICB_bj": [
@@ -7826,6 +8015,15 @@
         "last_price": 6385.0,
         "target_30d": 6767.31,
         "change_pct": 5.99,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 6350.0,
+        "target_30d": 6821.62,
+        "change_pct": 7.43,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -8037,6 +8235,15 @@
         "change_pct": 6.42,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 28800.0,
+        "target_30d": 30204.02,
+        "change_pct": 4.88,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "BNBC_ci": [
@@ -8244,6 +8451,15 @@
         "last_price": 1805.0,
         "target_30d": 1975.75,
         "change_pct": 9.46,
+        "confidence": "Moyenne",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 1755.0,
+        "target_30d": 1972.37,
+        "change_pct": 12.39,
         "confidence": "Moyenne",
         "trend": "UP"
       }
@@ -8455,6 +8671,15 @@
         "change_pct": -12.09,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE FORTE",
+        "last_price": 4790.0,
+        "target_30d": 3986.16,
+        "change_pct": -16.78,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "CABC_ci": [
@@ -8662,6 +8887,15 @@
         "last_price": 4000.0,
         "target_30d": 4471.57,
         "change_pct": 11.79,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT FORT",
+        "last_price": 3955.0,
+        "target_30d": 4470.14,
+        "change_pct": 13.03,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -8873,6 +9107,15 @@
         "change_pct": -4.94,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE FORTE",
+        "last_price": 29610.0,
+        "target_30d": 26547.59,
+        "change_pct": -10.34,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "CFAC_ci": [
@@ -9080,6 +9323,15 @@
         "last_price": 1575.0,
         "target_30d": 1609.14,
         "change_pct": 2.17,
+        "confidence": "Moyenne",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 1575.0,
+        "target_30d": 1599.56,
+        "change_pct": 1.56,
         "confidence": "Moyenne",
         "trend": "UP"
       }
@@ -9291,6 +9543,15 @@
         "change_pct": -3.39,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 5340.0,
+        "target_30d": 5190.46,
+        "change_pct": -2.8,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "FTSC_ci": [
@@ -9498,6 +9759,15 @@
         "last_price": 2000.0,
         "target_30d": 1723.48,
         "change_pct": -13.83,
+        "confidence": "Basse",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE FORTE",
+        "last_price": 1975.0,
+        "target_30d": 1749.79,
+        "change_pct": -11.4,
         "confidence": "Basse",
         "trend": "DOWN"
       }
@@ -9709,6 +9979,15 @@
         "change_pct": -2.94,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 21695.0,
+        "target_30d": 21270.27,
+        "change_pct": -1.96,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "NTLC_ci": [
@@ -9916,6 +10195,15 @@
         "last_price": 16395.0,
         "target_30d": 15404.69,
         "change_pct": -6.04,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 16250.0,
+        "target_30d": 15563.87,
+        "change_pct": -4.22,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -10127,6 +10415,15 @@
         "change_pct": -5.88,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 2800.0,
+        "target_30d": 2610.69,
+        "change_pct": -6.76,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "ORAC_ci": [
@@ -10334,6 +10631,15 @@
         "last_price": 16000.0,
         "target_30d": 16763.24,
         "change_pct": 4.77,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 16495.0,
+        "target_30d": 16803.0,
+        "change_pct": 1.87,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -10545,6 +10851,15 @@
         "change_pct": -11.56,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE FORTE",
+        "last_price": 8820.0,
+        "target_30d": 7802.99,
+        "change_pct": -11.53,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "SCRC_ci": [
@@ -10752,6 +11067,15 @@
         "last_price": 3305.0,
         "target_30d": 3771.62,
         "change_pct": 14.12,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 3495.0,
+        "target_30d": 3780.81,
+        "change_pct": 8.18,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -10963,6 +11287,15 @@
         "change_pct": 7.09,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 12115.0,
+        "target_30d": 12798.54,
+        "change_pct": 5.64,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "SDSC_ci": [
@@ -11170,6 +11503,15 @@
         "last_price": 2290.0,
         "target_30d": 2158.97,
         "change_pct": -5.72,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 2210.0,
+        "target_30d": 2163.21,
+        "change_pct": -2.12,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -11381,6 +11723,15 @@
         "change_pct": 3.71,
         "confidence": "Haute",
         "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 39000.0,
+        "target_30d": 40416.44,
+        "change_pct": 3.63,
+        "confidence": "Haute",
+        "trend": "UP"
       }
     ],
     "SIBC_ci": [
@@ -11588,6 +11939,15 @@
         "last_price": 9000.0,
         "target_30d": 9346.99,
         "change_pct": 3.86,
+        "confidence": "Haute",
+        "trend": "UP"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "ACHAT",
+        "last_price": 8950.0,
+        "target_30d": 9348.56,
+        "change_pct": 4.45,
         "confidence": "Haute",
         "trend": "UP"
       }
@@ -11799,6 +12159,15 @@
         "change_pct": -3.56,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 5195.0,
+        "target_30d": 5010.92,
+        "change_pct": -3.54,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "SMBC_ci": [
@@ -12006,6 +12375,15 @@
         "last_price": 17350.0,
         "target_30d": 16972.4,
         "change_pct": -2.18,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 17295.0,
+        "target_30d": 17051.21,
+        "change_pct": -1.41,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -12217,6 +12595,15 @@
         "change_pct": -8.52,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 8360.0,
+        "target_30d": 7869.22,
+        "change_pct": -5.87,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "SPHC_ci": [
@@ -12424,6 +12811,15 @@
         "last_price": 7850.0,
         "target_30d": 7423.52,
         "change_pct": -5.43,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "NEUTRE",
+        "last_price": 7550.0,
+        "target_30d": 7429.95,
+        "change_pct": -1.59,
         "confidence": "Haute",
         "trend": "DOWN"
       }
@@ -12635,6 +13031,15 @@
         "change_pct": -5.91,
         "confidence": "Haute",
         "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE",
+        "last_price": 24105.0,
+        "target_30d": 23011.79,
+        "change_pct": -4.54,
+        "confidence": "Haute",
+        "trend": "DOWN"
       }
     ],
     "TTLS_sn": [
@@ -12842,6 +13247,15 @@
         "last_price": 4250.0,
         "target_30d": 3689.16,
         "change_pct": -13.2,
+        "confidence": "Haute",
+        "trend": "DOWN"
+      },
+      {
+        "as_of": "2026-07-10",
+        "signal": "VENTE FORTE",
+        "last_price": 4260.0,
+        "target_30d": 3716.53,
+        "change_pct": -12.76,
         "confidence": "Haute",
         "trend": "DOWN"
       }
