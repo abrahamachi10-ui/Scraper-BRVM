@@ -60,7 +60,7 @@ SIKA_URL = SIKA_BASE + "/marches/dividendes"
 BRVM_BASE = "https://www.brvm.org"
 BRVM_URL = BRVM_BASE + "/fr/esv/paiement-de-dividendes"
 
-PROJECT_ROOT = Path(__file__).parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_DIR = PROJECT_ROOT / "data" / "dividendes"
 AVIS_DIR = PROJECT_ROOT / "data" / "avis_dividendes"
 

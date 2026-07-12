@@ -48,17 +48,17 @@ jobs:
 
       - name: Scraping cours (actions + indices)
         if: ${{ github.event_name == 'schedule' || inputs.mode == 'full' || inputs.mode == 'cours_only' }}
-        run: python scraper_brvm.py
+        run: python scraper/scraper_brvm.py
         continue-on-error: true
 
       - name: Scraping dividendes
         if: ${{ github.event_name == 'schedule' || inputs.mode == 'full' || inputs.mode == 'dividendes_only' }}
-        run: python scraper_dividendes.py
+        run: python scraper/scraper_dividendes.py
         continue-on-error: true
 
       - name: Scraping news
         if: ${{ github.event_name == 'schedule' || inputs.mode == 'full' || inputs.mode == 'news_only' }}
-        run: python scraper_news_brvm.py
+        run: python scraper/scraper_news_brvm.py
         continue-on-error: true
 
       - name: Upload logs en artefact
@@ -66,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scraper-logs-daily-${{ github.run_id }}
-          path: "*.log"
+          path: "scraper/*.log"
           retention-days: 14
           if-no-files-found: ignore
 

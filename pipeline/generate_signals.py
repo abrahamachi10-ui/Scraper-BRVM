@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from quant.backtest import run_walk_forward
 from quant.covariance import estimate_covariance
 from quant.data_loader import load_universe
@@ -36,7 +38,7 @@ log = logging.getLogger("generate_signals")
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=Path(__file__).parent)
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument(
         "--skip-backtest", action="store_true",
         help="Skip walk-forward backtest (long-running; useful for quick runs).",

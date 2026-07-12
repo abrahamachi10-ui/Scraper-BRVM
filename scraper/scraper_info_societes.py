@@ -44,7 +44,7 @@ INDICE_URL = BASE_URL + "/marches/historiques/{ticker}"
 
 REQUEST_DELAY = 0.5
 
-OUTPUT_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data"
 SOCIETE_DIR = OUTPUT_DIR / "societes"
 INDICES_DIR = OUTPUT_DIR / "indices"
 

@@ -592,7 +592,7 @@ async function loadSignalsData() {
       histTxt = await get(`${BASE}/signals/signals_history.json`);
     } catch (ghErr) {
       // Fallback dev local : fichier servi à côté du HTML (file:// ou serveur statique).
-      const localResp = await fetch('data/signals/signals_history.json');
+      const localResp = await fetch('../data/signals/signals_history.json');
       if (!localResp.ok) throw ghErr;
       histTxt = await localResp.text();
     }

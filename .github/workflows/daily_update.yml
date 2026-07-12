@@ -34,7 +34,7 @@ jobs:
         run: pip install pandas openpyxl
 
       - name: Régénérer Composition_flottante.xlsx
-        run: python build_composition_flottante.py
+        run: python pipeline/build_composition_flottante.py
 
       - name: Commit & push si changements
         run: |
