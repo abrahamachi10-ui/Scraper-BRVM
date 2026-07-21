@@ -2,7 +2,8 @@
 
 Pipeline de données BRVM (Bourse Régionale des Valeurs Mobilières) : scraping
 quotidien des cours, sociétés, fondamentaux, dividendes et news, génération de
-signaux quantitatifs, et dashboard HTML de visualisation.
+signaux quantitatifs, dashboard HTML de visualisation, et base PostgreSQL
+relationnelle pour interroger l'ensemble par requêtes SQL.
 
 ## Composants
 
@@ -43,6 +44,38 @@ signals), couvert par la suite de tests `tests/`.
   Détail action, Détail indice) connecté au dépôt GitHub et actualisé
   automatiquement. Voir [POWERBI.md](POWERBI.md).
 
+### 4. Base de données PostgreSQL
+
+Les fichiers plats de `data/` sont chargés dans une base relationnelle
+PostgreSQL (`brvm`) : 7 tables reliées par clés étrangères, import idempotent
+(rejouable sans créer de doublons), et un rapprochement automatique — mais
+volontairement prudent — entre les articles de news et les sociétés
+concernées.
+
+| Fichier | Rôle |
+|---|---|
+| `database/schema.sql` | Schéma relationnel : 7 tables, clés étrangères, contraintes de cohérence (`CHECK`) |
+| `database/import_data.py` | Import/upsert de `data/` vers PostgreSQL (`ON CONFLICT` → rejouable sans doublons) |
+| `database/link_news.py` | Rapprochement news ↔ actions par mots-clés, uniquement quand une seule société correspond au titre |
+| `database/test_queries.sql` | 10 requêtes d'exemple (jointures, CTE, window functions) |
+
+**Schéma** — deux tables pivot (`actions`, `indices`) référencées par les
+autres :
+
+```
+actions ──┬── historique_actions   (cours quotidiens)
+          ├── dividendes           (par exercice)
+          ├── fondamentaux         (CA, RN, BNPA, PER par année)
+          └── news                 (articles liés, si identifiés)
+
+indices ──┴── historique_indices   (cours quotidiens)
+```
+
+**Volumétrie actuelle** : 48 actions, 13 indices, 152 000+ lignes de cours
+(actions + indices), 326 dividendes, 239 lignes de fondamentaux, 5 600+
+articles de news (dont 230 liés automatiquement à une société sans
+ambiguïté).
+
 ## Installation
 
 ```bash
@@ -66,6 +99,17 @@ python scraper_news_brvm.py        # news
 ```bash
 python generate_signals.py         # signaux + portefeuille
 pytest                             # tests du moteur quant
+```
+
+### Base de données
+
+```bash
+createdb brvm
+psql -d brvm -f database/schema.sql
+
+export PGHOST=localhost PGDATABASE=brvm PGUSER=postgres PGPASSWORD=...
+python database/import_data.py     # import complet (rejouable)
+python database/link_news.py       # rapprochement news <-> actions
 ```
 
 ## Automatisation (GitHub Actions)
@@ -98,6 +142,7 @@ Déclenchement manuel via *Actions → (workflow) → Run workflow*.
 ├── generate_signals.py / build_signals_history.py / build_composition_flottante.py
 ├── quant/             # moteur quantitatif
 ├── tests/             # tests du moteur quant
+├── database/          # schéma PostgreSQL + scripts d'import et de liaison news
 ├── brvm_dashboard_enriched.html
 └── .github/workflows/ # scrape-daily, generate-signals, daily_update
 ```
