@@ -50,7 +50,7 @@ MAX_CONSECUTIVE_MISSING = 200
 SAVE_EVERY = 50
 
 # Dossier de sortie
-OUTPUT_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data"
 NEWS_DIR = OUTPUT_DIR / "news"
 HISTORY_FILE = NEWS_DIR / "actualites_brvm.csv"
 PROGRESS_FILE = NEWS_DIR / "scraping_progress.json"

@@ -7,7 +7,7 @@ relationnelle pour interroger l'ensemble par requêtes SQL.
 
 ## Composants
 
-### 1. Scrapers
+### 1. Scrapers (`scraper/`)
 
 | Script | Source | Fonction | Sortie |
 |---|---|---|---|
@@ -17,7 +17,7 @@ relationnelle pour interroger l'ensemble par requêtes SQL.
 | `scraper_dividendes.py` | brvm.org + sikafinance.com | Dividendes (à venir/passés) fusionnés + avis PDF | `data/dividendes/*.csv`, `*.json` |
 | `scraper_news_brvm.py` | sikafinance.com | News financières BRVM | `data/news/*.csv` |
 
-Modules partagés :
+Modules partagés (aussi dans `scraper/`) :
 
 | Module | Rôle |
 |---|---|
@@ -25,7 +25,7 @@ Modules partagés :
 | `brvm_emetteur_mapping.py` | Mapping émetteur BRVM ↔ ticker ↔ nom canonique |
 | `brvm_common.py` | Helpers HTTP/logging/parsing communs aux scrapers |
 
-### 2. Signaux & composition
+### 2. Signaux & composition (`pipeline/`)
 
 | Script | Fonction | Sortie |
 |---|---|---|
@@ -36,15 +36,7 @@ Modules partagés :
 Le moteur quantitatif est dans `quant/` (backtest, covariance, portfolio,
 signals), couvert par la suite de tests `tests/`.
 
-### 3. Dashboards
-
-- `brvm_dashboard_enriched.html` — dashboard statique consolidant cours,
-  fondamentaux, dividendes et signaux à partir des fichiers de `data/`.
-- `dash brvm Power BI.pbip` — rapport Power BI multi-pages (Vue d'ensemble,
-  Détail action, Détail indice) connecté au dépôt GitHub et actualisé
-  automatiquement. Voir [POWERBI.md](POWERBI.md).
-
-### 4. Base de données PostgreSQL
+### 3. Base de données (`database/`)
 
 Les fichiers plats de `data/` sont chargés dans une base relationnelle
 PostgreSQL (`brvm`) : 7 tables reliées par clés étrangères, import idempotent
@@ -76,6 +68,14 @@ indices ──┴── historique_indices   (cours quotidiens)
 articles de news (dont 230 liés automatiquement à une société sans
 ambiguïté).
 
+### 4. Dashboards (`dashboard/`)
+
+- `brvm_dashboard_enriched.html` — dashboard statique consolidant cours,
+  fondamentaux, dividendes et signaux à partir des fichiers de `data/`.
+- Rapport Power BI multi-pages (Vue d'ensemble, Détail action, Détail indice)
+  connecté au dépôt GitHub et actualisé automatiquement. Voir
+  [POWERBI_SPEC.md](docs/POWERBI_SPEC.md).
+
 ## Installation
 
 ```bash
@@ -87,18 +87,18 @@ pip install -r requirements.txt
 ### Scrapers (manuels)
 
 ```bash
-python scraper_brvm.py             # cours actions + indices
-python scraper_info_societes.py    # fiches sociétés
-python scraper_fondamentaux.py     # fondamentaux 5 ans
-python scraper_dividendes.py       # dividendes (brvm.org + sikafinance.com)
-python scraper_news_brvm.py        # news
+python scraper/scraper_brvm.py             # cours actions + indices
+python scraper/scraper_info_societes.py    # fiches sociétés
+python scraper/scraper_fondamentaux.py     # fondamentaux 5 ans
+python scraper/scraper_dividendes.py       # dividendes (brvm.org + sikafinance.com)
+python scraper/scraper_news_brvm.py        # news
 ```
 
 ### Signaux
 
 ```bash
-python generate_signals.py         # signaux + portefeuille
-pytest                             # tests du moteur quant
+python pipeline/generate_signals.py         # signaux + portefeuille
+pytest                                       # tests du moteur quant
 ```
 
 ### Base de données
@@ -119,7 +119,7 @@ python database/link_news.py       # rapprochement news <-> actions
 | `scrape-daily.yml` | Scraping quotidien (cours, dividendes, news) à 17h00 UTC, puis commit de `data/` |
 | `generate-signals.yml` | Génération des signaux Prophet + Black-Litterman (tests en gate) |
 | `daily_update.yml` | Régénération de la composition flottante après scraping |
-| `refresh-powerbi.yml` | Déclenche l'actualisation du dataset Power BI après génération des signaux (voir [POWERBI.md](POWERBI.md)) |
+| `refresh-powerbi.yml` | Déclenche l'actualisation du dataset Power BI après génération des signaux (voir [POWERBI_SPEC.md](docs/POWERBI_SPEC.md)) |
 
 Déclenchement manuel via *Actions → (workflow) → Run workflow*.
 
@@ -127,22 +127,22 @@ Déclenchement manuel via *Actions → (workflow) → Run workflow*.
 
 ```
 .
-├── data/
-│   ├── actions/       # CSV historiques OHLCV
-│   ├── indices/       # CSV + JSON des indices
-│   ├── societes/      # JSON fiches sociétés
-│   ├── fondamentaux/  # JSON fondamentaux 5 ans
-│   ├── dividendes/    # CSV + JSON dividendes (+ avis PDF)
-│   ├── news/          # CSV news
-│   └── signals/       # signaux générés
-├── scraper_*.py       # 5 scrapers
-├── brvm_common.py     # helpers partagés
-├── brvm_tickers.py    # tickers centralisés
-├── brvm_emetteur_mapping.py
-├── generate_signals.py / build_signals_history.py / build_composition_flottante.py
-├── quant/             # moteur quantitatif
-├── tests/             # tests du moteur quant
-├── database/          # schéma PostgreSQL + scripts d'import et de liaison news
-├── brvm_dashboard_enriched.html
-└── .github/workflows/ # scrape-daily, generate-signals, daily_update
+├── data/               # données scrapées + générées (déjà organisées)
+│   ├── actions/        # CSV historiques OHLCV
+│   ├── indices/        # CSV + JSON des indices
+│   ├── societes/       # JSON fiches sociétés
+│   ├── fondamentaux/   # JSON fondamentaux 5 ans
+│   ├── dividendes/     # CSV + JSON dividendes (+ avis PDF)
+│   ├── news/           # CSV news
+│   ├── signals/        # signaux générés
+│   └── algo/           # portefeuille généré
+├── scraper/            # 5 scrapers + modules partagés (brvm_common, brvm_tickers, brvm_emetteur_mapping)
+├── pipeline/           # generate_signals.py, build_signals_history.py, build_composition_flottante.py
+├── quant/              # moteur quantitatif (backtest, covariance, portfolio, signals)
+├── database/           # schéma PostgreSQL + import + liaison news (schema.sql, import_data.py, link_news.py)
+├── dashboard/          # brvm_dashboard_enriched.html
+├── docs/               # POWERBI_SPEC.md
+├── tests/              # tests du moteur quant
+├── simulateur-bourse/  # app Next.js (jeu de simulation boursière)
+└── .github/workflows/  # scrape-daily, generate-signals, daily_update, refresh-powerbi
 ```

@@ -42,7 +42,7 @@ BASE_URL = "https://www.sikafinance.com"
 SOCIETE_URL = BASE_URL + "/marches/societe/{ticker}"
 REQUEST_DELAY = 0.5
 
-OUTPUT_DIR = Path(__file__).parent / "data" / "fondamentaux"
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data" / "fondamentaux"
 
 log = setup_logging(Path(__file__).parent / "scraper_fondamentaux.log")
 

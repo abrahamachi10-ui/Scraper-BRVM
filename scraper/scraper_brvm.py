@@ -55,7 +55,7 @@ REQUEST_DELAY = 1.0
 MAX_EMPTY_WINDOWS = 4
 
 # Dossiers de sortie
-OUTPUT_DIR = Path(__file__).parent / "data"
+OUTPUT_DIR = Path(__file__).resolve().parent.parent / "data"
 ACTIONS_DIR = OUTPUT_DIR / "actions"
 INDICES_DIR = OUTPUT_DIR / "indices"
 

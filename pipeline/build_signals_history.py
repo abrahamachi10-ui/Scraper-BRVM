@@ -23,6 +23,8 @@ from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 from quant.data_loader import load_universe
 from quant.signals import (
     forecast_ticker,
@@ -45,7 +47,7 @@ EXIT_ERROR = 2
 def create_parser() -> argparse.ArgumentParser:
     """Create and configure the argument parser."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).parent)
+    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parent.parent)
     parser.add_argument(
         "--months", type=int, default=18,
         help="Look-back window in months (default: 18).",

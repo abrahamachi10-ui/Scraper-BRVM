@@ -50,9 +50,9 @@ jobs:
       - name: Generate signals + portfolio
         run: |
           if [ "${{ inputs.skip_backtest }}" = "true" ]; then
-            python generate_signals.py --skip-backtest
+            python pipeline/generate_signals.py --skip-backtest
           else
-            python generate_signals.py
+            python pipeline/generate_signals.py
           fi
 
       - name: Verify outputs exist
